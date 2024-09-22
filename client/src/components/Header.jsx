@@ -12,12 +12,12 @@ function Header() {
     setIsOpen(!isOpen);
   };
   return (
-    <header className='flex flex-col sticky gap-y-3 top-0 z-50'>
+    <header className='flex flex-col sticky gap-y-3 top-0 z-50 bg-white'>
       <div className='flex justify-between items-center border-b-2 p-4'>
         <div className="text-md sm:text-2xl font-bold whitespace-nowrap">
           <Link to="/" >
-            <span className='px-7 py-2 bg-gradient-to-r from-[#ff234b] to-cyan-400 text-white rounded-lg'>YOUR</span>
-            Blog
+            <span className='px-4 py-2 bg-gradient-to-r from-[#ff234b] to-cyan-400 text-white rounded-lg'>INSPIRE</span>
+            Hub
           </Link>
         </div>
 
@@ -81,12 +81,12 @@ function Header() {
       </div>
 
       <div className='flex sm:justify-end justify-between items-center px-4 py-2'>
-        <button className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300'>
+        <button className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300'>
           <FaMoon className='sm:text-2xl text-xl hover:text-sky-500' />
         </button>
 
         <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
-          Sign In
+          Sign Up
         </button>
       </div>
 
