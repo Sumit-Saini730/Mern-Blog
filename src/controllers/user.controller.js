@@ -22,10 +22,10 @@ const registerUser = asyncHandler(async (req, res) => {
         )
     }
     const newUser = await User.create({
-        username,
-        fullName,
-        email,
-        password
+        username: username.trim(),
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password: password.trim()
     })
 
     const createdUser = await User.findById(newUser._id).select("-password -refreshToken");

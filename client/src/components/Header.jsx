@@ -80,7 +80,7 @@ function Header() {
         </button>
       </div>
 
-      <div className='flex sm:justify-end justify-between items-center px-4 py-2'>
+      <div className='flex bg-transparent sm:justify-end justify-between items-center px-4 py-2'>
         <button className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300'>
           <FaMoon className='sm:text-2xl text-xl hover:text-sky-500' />
         </button>

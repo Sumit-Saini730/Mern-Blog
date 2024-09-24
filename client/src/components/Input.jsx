@@ -1,11 +1,11 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 
 function Input({
     label,
     type = "text",
     className = "",
     ...props
-}) {
+}, ref) {
   return (
     <div className='w-full'>
         {label && <label
@@ -13,14 +13,14 @@ function Input({
             {label}
         </label>}
 
-        <input 
+        <input
         type={type}
-        className={`px-3 py-2 rounded-xl border-2 border-gray-400 outline-none focus:border-sky-500 focus:bg-sky-50 duration-100 w-full font-bold ${className}`}
+        className={`px-3 py-2 rounded-xl border-2 shadow-lg border-gray-400 outline-none focus:border-sky-500 focus:bg-sky-50 duration-100 w-full font-bold ${className}`}
         {...props}
-        
+        ref={ref}
         />
     </div>
   )
 }
 
-export default Input
+export default forwardRef(Input)
