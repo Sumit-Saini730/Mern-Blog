@@ -86,7 +86,7 @@ function Header() {
         </button>
 
         <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
-          Sign Up
+          <Link to="/signup">Sign Up</Link>
         </button>
       </div>
 

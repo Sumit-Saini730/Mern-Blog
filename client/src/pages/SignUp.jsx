@@ -5,7 +5,7 @@ import Input from '../components/Input'
 import { useForm } from "react-hook-form"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
-import { set } from 'mongoose'
+
 function SignUp() {
 
   const { register, setValue, handleSubmit, formState: { errors, isSubmitting } } = useForm()
@@ -146,7 +146,7 @@ function SignUp() {
           </form>
           <div className='text-center font-semibold'>
             <span>Already have an account? </span>
-            <Link to="/sign-in" className='text-sky-500 hover:underline'>Sign In</Link>
+            <Link to="/signin" className='text-sky-500 hover:underline'>Sign In</Link>
           </div>
           {error && <p className="text-red-500 text-lg font-semibold text-center border-2 border-red-500 rounded-xl py-2 bg-red-100">{error}</p>}
         </div>
