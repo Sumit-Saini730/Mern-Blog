@@ -5,6 +5,7 @@ import Input from '../components/Input'
 import { useForm } from "react-hook-form"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import OAuth from '../components/OAuth'
 
 function SignUp() {
 
@@ -21,14 +22,14 @@ function SignUp() {
     try {
       setError(null)
 
-      const response = await axios.post("api/v1/users/signup", data);
+      const response = await axios.post("api/v1/auth/signup", data);
       // console.log(response)
       // console.log(response.data.success)
       if (response.data.success === true) {
         // console.log("inside success")
         navigate("/sign-in")
       }
-      
+
     } catch (error) {
       if (error.response) {
         const message = error.response.data.message;
@@ -58,7 +59,7 @@ function SignUp() {
             <span className='px-4 py-2 bg-gradient-to-r from-[#ff234b] to-cyan-400 text-white rounded-lg'>INSPIRE</span>
             Hub
           </Link>
-          <p className='text-lg'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint vero velit, sit possimus earum laudantium!</p>
+          <p className='text-lg'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint vero velit, sit laudantium!</p>
         </div>
 
         <div className='flex-1'>
@@ -143,6 +144,8 @@ function SignUp() {
             <button type='submit' className={` my-4 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${isSubmitting ? "disabled" : ""}`}>
               {isSubmitting ? "Submitting..." : "Sign Up"}
             </button>
+            {/* by google */}
+            <OAuth />
           </form>
           <div className='text-center font-semibold'>
             <span>Already have an account? </span>

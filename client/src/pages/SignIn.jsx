@@ -5,12 +5,16 @@ import Input from '../components/Input'
 import { useForm } from "react-hook-form"
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import { loginStart, loginSuccess, loginFailure } from '../features/user/userSlice'
+import { useDispatch, useSelector } from "react-redux"
+import OAuth from '../components/OAuth'
 
 function SignIn() {
 
-  const { register, setValue, handleSubmit, formState: { errors, isSubmitting } } = useForm()
-  const [error, setError] = useState(null)
+  const { register, setValue, handleSubmit, formState: { errors } } = useForm()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {loading, error} = useSelector((state) => state.user)
 
   const [showPassword, setShowPassword] = useState(false)
   const togglePasswordVisibility = () => {
@@ -19,11 +23,16 @@ function SignIn() {
   const login = async (data) => {
     // console.log(data)
     try {
-      setError(null)
+      dispatch(loginStart())
 
-      const response = await axios.post("api/v1/users/signin", data);
+      const response = await axios.post("api/v1/auth/signin", data);
+      // console.log(response)
+      if(response.data.success === false) {
+        dispatch(loginFailure(response.data.message))
+      }
       if (response.data.success === true) {
         // console.log("inside success")
+        dispatch(loginSuccess(response.data.data.user))
         navigate("/")
       }
       
@@ -32,15 +41,17 @@ function SignIn() {
         const message = error.response.data.message;
         if (message) {
           // alert(message);
-          setError(message);
+          dispatch(loginFailure(message));
         } else {
           alert("An unknown error occurred.");
           // setError("An unknown error occurred.");
         }
       } else if (error.request) {
-        alert("No response from server. Please try again later.");
+        // alert("No response from server. Please try again later.");
+        dispatch(loginFailure("No response from server. Please try again later."));
       } else {
-        alert("An error occurred. Please try again.");
+        // alert("An error occurred. Please try again.");
+        dispatch(loginFailure("An error occurred. Please try again."));
       }
     }
   }
@@ -56,7 +67,7 @@ function SignIn() {
             <span className='px-4 py-2 bg-gradient-to-r from-[#ff234b] to-cyan-400 text-white rounded-lg'>INSPIRE</span>
             Hub
           </Link>
-          <p className='text-lg'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint vero velit, sit possimus earum laudantium!</p>
+          <p className='text-lg'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint vero velit, sit laudantium!</p>
         </div>
 
         <div className='flex-1'>
@@ -106,9 +117,13 @@ function SignIn() {
               </div>
             </div>
 
-            <button type='submit' className={` my-4 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${isSubmitting ? "disabled" : ""}`}>
-              {isSubmitting ? "Loading..." : "Sign In"}
+            <button type='submit' className={` my-4 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${loading ? "disabled" : ""}`}>
+              {loading ? "Loading..." : "Sign In"}
             </button>
+
+            {/* signin by google */}
+            <OAuth />
+            
           </form>
           <div className='text-center font-semibold'>
             <span>Don't have an account? </span>

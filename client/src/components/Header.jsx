@@ -84,10 +84,12 @@ function Header() {
         <button className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300'>
           <FaMoon className='sm:text-2xl text-xl hover:text-sky-500' />
         </button>
-
-        <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
-          <Link to="/signup">Sign Up</Link>
-        </button>
+        
+        <Link to="/signup">
+          <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
+            Sign Up
+          </button>
+        </Link>
       </div>
 
       {/* side navbar for smaller screens */}
