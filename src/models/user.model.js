@@ -22,7 +22,21 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
-            required: true
+            required: function(){
+                return this.authProvider === "local"
+            }
+        },
+        authProvider: {
+            type: String,
+            enums: ["local", "google"],
+            default: "local"
+        },
+        profilePic: {
+            type: String,
+            default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+        },
+        refreshToken: {
+            type: String
         }
     }, 
     
@@ -30,15 +44,38 @@ const userSchema = new Schema(
 )
 
 userSchema.pre("save", async function(next){
+
+    if(this.authProvider !== "local") return next();
     if(!this.isModified("password")) return next();
 
     this.password = await bcryptjs.hash(this.password, 10);
     next()
 })
 
-userSchema.methods.isPasswordCorrect = async function (password){
-    return await bcryptjs.compare(password, this.password)
-}
+userSchema.methods.isPasswordCorrect = async function (password) {
+    if (this.authProvider !== "local") {
+      // User signed up with Google, and is trying to use email/password
+      return {
+        success: false,
+        message: "It seems like you're signed up with Google. Please login with Google."
+      };
+    }
+  
+    // Check if the password matches (only for local email/password sign-up)
+    const isMatch = await bcryptjs.compare(password, this.password);
+    if (!isMatch) {
+      return {
+        success: false,
+        message: "Incorrect Password."
+      };
+    }
+  
+    // If password matches
+    return {
+      success: true,
+      message: "Password is correct."
+    };
+  };
 
 userSchema.methods.generateAccessToken = function (){
     return jwt.sign(
