@@ -4,10 +4,13 @@ import { Link, NavLink } from 'react-router-dom'
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaTimes } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
+import {useSelector} from "react-redux"
+import ProfileDropdown from './ProfileDropdown';
 function Header() {
 
-  const [isOpen, setIsOpen] = useState(false);
+  const {currentUser} = useSelector((state) => state.user)
 
+  const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -85,11 +88,17 @@ function Header() {
           <FaMoon className='sm:text-2xl text-xl hover:text-sky-500' />
         </button>
         
-        <Link to="/signup">
+        {currentUser ? (
+          <ProfileDropdown />
+        ): 
+        (
+          <Link to="/signup">
           <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
             Sign Up
           </button>
         </Link>
+        )}
+        
       </div>
 
       {/* side navbar for smaller screens */}
