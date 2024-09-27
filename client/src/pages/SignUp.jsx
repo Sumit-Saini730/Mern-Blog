@@ -131,7 +131,7 @@ function SignUp() {
                   )}
                 />
                 <span
-                  className='text-2xl absolute right-6 top-[38px] cursor-pointer duration-100 hover:text-sky-500'
+                  className='text-2xl absolute right-6 text-black top-[38px] cursor-pointer duration-100 hover:text-sky-500'
                   onClick={togglePasswordVisibility}
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}

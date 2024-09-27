@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { BsFacebook, BsInstagram, BsTwitter, BsGithub, BsDribbble } from "react-icons/bs";
 function Footer() {
   return (
-    <footer className='bg-white border-t-4 border-sky-500 rounded-t-3xl'>
+    <footer className='border-t-4 border-sky-500 rounded-t-3xl'>
       <div className='mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8'>
         <div className='md:flex md:justify-between'>
           <div className="text-lg sm:text-2xl font-bold mb-8 md:mb-0">
@@ -15,35 +15,35 @@ function Footer() {
 
           <div className='grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3'>
             <div>
-              <h2 className='mb-3 font-bold text-black uppercase'>about</h2>
+              <h2 className='mb-3 font-bold uppercase'>about</h2>
               <ul>
                 <li>
-                  <Link to="#" className=' text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Mern Projects</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Mern Projects</Link>
                 </li>
                 <li>
-                  <Link to="#" className='text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Blog</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Blog</Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h2 className='mb-3 font-bold text-black uppercase'>contact us</h2>
+              <h2 className='mb-3 font-bold uppercase'>contact us</h2>
               <ul>
                 <li>
-                  <Link to="#" className=' text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Github</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Github</Link>
                 </li>
                 <li>
-                  <Link to="#" className='text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Discord</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Discord</Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h2 className='mb-3 font-bold text-black uppercase'>legal</h2>
+              <h2 className='mb-3 font-bold uppercase'>legal</h2>
               <ul>
                 <li>
-                  <Link to="#" className=' text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Privacy Policy</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link to="#" className='text-gray-700 hover:text-gray-900 hover:underline pb-2 font-semibold'>Terms &amp; Conditions</Link>
+                  <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Terms &amp; Conditions</Link>
                 </li>
               </ul>
             </div>
@@ -51,7 +51,7 @@ function Footer() {
         </div>
         <hr className="my-6 border-sky-500 sm:mx-auto lg:my-8" />
         <div className="sm:flex sm:items-center sm:justify-between">
-          <span className="text-gray-700 sm:text-center">
+          <span className="sm:text-center">
             © {new Date().getFullYear()}
             <Link to="#" className="hover:underline">
               sumitsaini'sblog

@@ -3,23 +3,26 @@ import React, { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaTimes } from "react-icons/fa";
+import { MdSunny } from "react-icons/md";
 import { IoMenu } from "react-icons/io5";
-import {useSelector} from "react-redux"
+import {useSelector, useDispatch} from "react-redux"
+import {toggleTheme} from "../features/theme/themeSlice"
 import ProfileDropdown from './ProfileDropdown';
 function Header() {
 
   const {currentUser} = useSelector((state) => state.user)
-
+  const {mode} = useSelector((state) => state.theme)
+  const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
   return (
-    <header className='flex flex-col sticky gap-y-3 top-0 z-50 bg-white'>
+    <header className='flex flex-col sticky gap-y-3 top-0 z-50 bg-white dark:bg-slate-800'>
       <div className='flex justify-between items-center border-b-2 p-4'>
         <div className="text-md sm:text-2xl font-bold whitespace-nowrap">
           <Link to="/" >
-            <span className='px-4 py-2 bg-gradient-to-r from-[#ff234b] to-cyan-400 text-white rounded-lg'>INSPIRE</span>
+            <span className='px-4 py-2 text-white bg-gradient-to-r from-[#ff234b] to-cyan-400 rounded-lg'>INSPIRE</span>
             Hub
           </Link>
         </div>
@@ -28,7 +31,7 @@ function Header() {
           <input
             type="text"
             placeholder='Search...'
-            className='border-2 outline-sky-500 border-gray-400 p-2 rounded-3xl pr-12 pl-4 hidden lg:inline'
+            className='border-2 text-black dark:bg-sky-50 outline-sky-500 border-gray-400 p-2 rounded-3xl pr-12 pl-4 hidden lg:inline'
           />
 
           <span>
@@ -45,7 +48,7 @@ function Header() {
             <li className='mr-7'>
               <NavLink
                 to="/"
-                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 hover:text-sky-600' : ''}`}
               >
                 Home
               </NavLink>
@@ -53,7 +56,7 @@ function Header() {
             <li className='mr-7'>
               <NavLink
                 to="/about"
-                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 hover:text-sky-600' : ''}`}
               >
                 About
               </NavLink>
@@ -61,7 +64,7 @@ function Header() {
             <li className='mr-7'>
               <NavLink
                 to="/contact"
-                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 hover:text-sky-600' : ''}`}
               >
                 Contact
               </NavLink>
@@ -69,7 +72,7 @@ function Header() {
             <li className='mr-7'>
               <NavLink
                 to="/projects"
-                className={({ isActive }) => `duraition-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+                className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 hover:text-sky-600' : ''}`}
               >
                 Projects
               </NavLink>
@@ -84,8 +87,10 @@ function Header() {
       </div>
 
       <div className='flex bg-transparent sm:justify-end justify-between items-center px-4 py-2'>
-        <button className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300'>
-          <FaMoon className='sm:text-2xl text-xl hover:text-sky-500' />
+        <button
+         onClick={() => dispatch(toggleTheme())}
+         className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'>
+          {mode === "dark" ? <MdSunny /> : <FaMoon />}
         </button>
         
         {currentUser ? (
@@ -147,7 +152,7 @@ function Header() {
             <NavLink
               to="/projects"
               onClick={toggleMenu}
-              className={({ isActive }) => `duraition-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
             >
               Projects
             </NavLink>
