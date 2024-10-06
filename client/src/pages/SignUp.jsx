@@ -27,7 +27,7 @@ function SignUp() {
       // console.log(response.data.success)
       if (response.data.success === true) {
         // console.log("inside success")
-        navigate("/sign-in")
+        navigate("/signin")
       }
 
     } catch (error) {

@@ -123,7 +123,7 @@ const google = asyncHandler(async (req, res) => {
             fullName: name,
             email,
             authProvider: "google",
-            profilePic: googlePhotoUrl
+            profilePicture: googlePhotoUrl
         })
 
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(newUser._id);

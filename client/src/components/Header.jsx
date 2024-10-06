@@ -38,10 +38,16 @@ function Header() {
             <AiOutlineSearch className='text-2xl absolute right-4 top-[10px] cursor-pointer hidden lg:inline' />
           </span>
 
-          <button className='w-10 h-10 border-2 border-gray-400 rounded-full items-center flex justify-center lg:hidden'>
+          <button className='w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-400 rounded-full items-center flex justify-center lg:hidden'>
             <AiOutlineSearch className='text-xl hover:text-sky-500' />
           </button>
         </form>
+
+        <button
+         onClick={() => dispatch(toggleTheme())}
+         className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'>
+          {mode === "dark" ? <MdSunny /> : <FaMoon />}
+        </button>
 
         <nav className='hidden sm:flex items-center justify-center'>
           <ul className='flex font-bold text-base'>
@@ -86,13 +92,8 @@ function Header() {
         </button>
       </div>
 
-      <div className='flex bg-transparent sm:justify-end justify-between items-center px-4 py-2'>
-        <button
-         onClick={() => dispatch(toggleTheme())}
-         className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'>
-          {mode === "dark" ? <MdSunny /> : <FaMoon />}
-        </button>
-        
+
+      <div className='absolute top-[85px] right-5 z-10'>
         {currentUser ? (
           <ProfileDropdown />
         ): 
@@ -103,11 +104,10 @@ function Header() {
           </button>
         </Link>
         )}
-        
       </div>
 
       {/* side navbar for smaller screens */}
-      <div className={`fixed top-0 right-0 sm:hidden ${isOpen ? 'flex' : 'hidden'} bg-transparent backdrop-blur-md h-screen sm:w-1/2 w-full`}>
+      <div className={`text-black dark:text-white fixed top-0 right-0 sm:hidden ${isOpen ? 'flex' : 'hidden'} bg-transparent backdrop-blur-md h-screen sm:w-1/2 w-full`}>
         <ul className='flex-col font-bold mt-4 w-full p-2'>
           <li
             onClick={toggleMenu}
@@ -123,7 +123,7 @@ function Header() {
             <NavLink
               to="/"
 
-              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : ''}`}
             >
               Home
             </NavLink>
@@ -133,7 +133,7 @@ function Header() {
             className='w-full p-1 rounded duration-100 my-4 text-center'>
             <NavLink
               to="/about"
-              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : ''}`}
             >
               About
             </NavLink>
@@ -143,7 +143,7 @@ function Header() {
             className='w-full p-1 rounded duration-100 my-4 text-center'>
             <NavLink
               to="/contact"
-              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : ''}`}
             >
               Contact
             </NavLink>
@@ -152,7 +152,7 @@ function Header() {
             <NavLink
               to="/projects"
               onClick={toggleMenu}
-              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : 'text-black'}`}
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : ''}`}
             >
               Projects
             </NavLink>
