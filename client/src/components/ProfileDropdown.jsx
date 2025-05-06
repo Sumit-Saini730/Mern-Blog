@@ -8,7 +8,7 @@ import default_image from "../assets/default_image.jpg";
 
 function ProfileDropdown() {
   const { currentUser } = useSelector((state) => state.user)
-  console.log(currentUser.profilePicture)
+  // console.log(currentUser.profilePicture)
   const [isOpen, setIsOpen] = useState(false) // for profile menu
   const dropdownRef = useRef(null);
 
@@ -44,7 +44,7 @@ function ProfileDropdown() {
           <div className='flex items-center gap-4 p-3'>
             <span className='w-16 h-16 rounded-full overflow-hidden'>
               {currentUser?.profilePicture ? (
-                <img src={currentUser.profilePicture} alt="User_Profile" />
+                <img src={currentUser.profilePicture} alt="User_Profile" onError={(e) => e.target.src = default_image} />
               ) : (
                 <span className="text-gray-500">No Image</span>
               )}

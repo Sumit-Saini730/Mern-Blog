@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
         password: password.trim()
     })
 
-    const createdUser = await User.findById(newUser._id).select("-password -refreshToken -googleId");
+    const createdUser = await User.findById(newUser._id).select("-password -refreshToken -profilePictureId");
 
     if (!createdUser) {
         throw new ApiError(
@@ -84,7 +84,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, message)
     }else{
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
-        const existingUser = await User.findById(user._id).select("-password -refreshToken");
+        const existingUser = await User.findById(user._id).select("-password -refreshToken -profilePictureId");
 
         return res
             .status(200)
@@ -127,7 +127,7 @@ const google = asyncHandler(async (req, res) => {
         })
 
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(newUser._id);
-        const existingUser = await User.findById(newUser._id).select("-password -refreshToken");
+        const existingUser = await User.findById(newUser._id).select("-password -refreshToken -profilePictureId");
 
         return res
             .status(200)
@@ -185,7 +185,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Invalid refresh token")
         }
 
-        const user = await User.findById(decodedToken?.id).select("-password -refreshToken");
+        const user = await User.findById(decodedToken?.id).select("-password -refreshToken -profilePictureId");
 
         if (!user) {
             throw new ApiError(401, "Invalid Access Token")
