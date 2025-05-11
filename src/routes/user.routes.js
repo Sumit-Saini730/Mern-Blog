@@ -4,6 +4,7 @@ import verifyJWT from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import { updateUser } from "../controllers/user.controller.js";
 import { getCurrentUser } from "../controllers/user.controller.js";
+import { deleteUser } from "../controllers/user.controller.js";
 
 const router = Router();
 
@@ -19,6 +20,6 @@ router.route("/update/:userId").patch(
     upload.single("profilePicture"),
     updateUser
 );
-
+router.route("/delete/:userId").delete(verifyJWT, deleteUser);
 
 export default router;

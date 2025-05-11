@@ -5,13 +5,13 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaTimes } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import { IoMenu } from "react-icons/io5";
-import {useSelector, useDispatch} from "react-redux"
-import {toggleTheme} from "../features/theme/themeSlice"
+import { useSelector, useDispatch } from "react-redux"
+import { toggleTheme } from "../features/theme/themeSlice"
 import ProfileDropdown from './ProfileDropdown';
 function Header() {
 
-  const {currentUser} = useSelector((state) => state.user)
-  const {mode} = useSelector((state) => state.theme)
+  const { currentUser } = useSelector((state) => state.user)
+  const { mode } = useSelector((state) => state.theme)
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => {
@@ -44,13 +44,13 @@ function Header() {
         </form>
 
         <button
-         onClick={() => dispatch(toggleTheme())}
-         className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'>
+          onClick={() => dispatch(toggleTheme())}
+          className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center mr-8 cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'>
           {mode === "dark" ? <MdSunny /> : <FaMoon />}
         </button>
 
         <nav className='hidden sm:flex items-center justify-center'>
-          <ul className='flex font-bold text-base'>
+          <ul className='flex font-bold text-base items-center justify-center'>
             <li className='mr-7'>
               <NavLink
                 to="/"
@@ -67,14 +67,14 @@ function Header() {
                 About
               </NavLink>
             </li>
-            <li className='mr-7'>
+            {/* <li className='mr-7'>
               <NavLink
                 to="/contact"
                 className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 hover:text-sky-600' : ''}`}
               >
                 Contact
               </NavLink>
-            </li>
+            </li> */}
             <li className='mr-7'>
               <NavLink
                 to="/projects"
@@ -83,6 +83,18 @@ function Header() {
                 Projects
               </NavLink>
             </li>
+
+            {currentUser ? (
+                <ProfileDropdown />
+            ) :
+              (
+                <Link to="/signup">
+                  <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200'>
+                    Sign Up
+                  </button>
+                </Link>
+              )}
+
           </ul>
         </nav>
         <button
@@ -93,7 +105,7 @@ function Header() {
       </div>
 
 
-      <div className='absolute top-[85px] right-5 z-10'>
+      {/* <div className='absolute top-[85px] right-5 z-10'>
         {currentUser ? (
           <ProfileDropdown />
         ): 
@@ -104,7 +116,7 @@ function Header() {
           </button>
         </Link>
         )}
-      </div>
+      </div> */}
 
       {/* side navbar for smaller screens */}
       <div className={`text-black dark:text-white fixed top-0 right-0 sm:hidden ${isOpen ? 'flex' : 'hidden'} bg-transparent backdrop-blur-md h-screen sm:w-1/2 w-full`}>
@@ -116,6 +128,17 @@ function Header() {
               className='p-1 rounded border-2 border-gray-800 flex justify-center cursor-pointer items-center hover:text-sky-500 duration-150 text-xl'>
               <FaTimes />
             </button>
+          </li>
+          <li
+            onClick={toggleMenu}
+            className='w-full p-1 rounded duration-100 my-4 text-center'>
+            <NavLink
+              to="/dashboard?tab=profile"
+
+              className={({ isActive }) => `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 hover:text-sky-700' : ''}`}
+            >
+              Profile
+            </NavLink>
           </li>
           <li
             onClick={toggleMenu}
@@ -138,7 +161,7 @@ function Header() {
               About
             </NavLink>
           </li>
-          <li
+          {/* <li
             onClick={toggleMenu}
             className='w-full p-1 rounded duration-100 my-4 text-center'>
             <NavLink
@@ -147,7 +170,7 @@ function Header() {
             >
               Contact
             </NavLink>
-          </li>
+          </li> */}
           <li className='w-full p-1 rounded duration-100 my-4 text-center'>
             <NavLink
               to="/projects"

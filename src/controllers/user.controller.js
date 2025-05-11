@@ -87,8 +87,30 @@ const updateUser = asyncHandler(async (req, res) => {
             ))
 
 })
+
+const deleteUser = asyncHandler(async(req,res) => {
+    if(req.user.id !== req.params.userId){
+        throw new ApiError(401, "Unauthorized request")
+    }
+
+    if(req.user.profilePictureId){
+        const deletionResult = await deletePreviousFile(req.user.profilePictureId);
+        if(!deletionResult){
+            throw new ApiError(400, "Error while deleting previous profile picture");
+        }
+    }
+    await User.findByIdAndDelete(req.user.id);
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "User deleted successfully"
+        ))
+})
 export {
     test,
     updateUser,
-    getCurrentUser
+    getCurrentUser,
+    deleteUser
 }

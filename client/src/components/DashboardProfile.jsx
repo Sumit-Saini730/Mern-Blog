@@ -18,6 +18,7 @@ function DashboardProfile() {
   const [isSure, setIsSure] = useState(false)
   const [imageFile, setImageFile] = useState(null)
   const [imageFileTempUrl, setImageFileTempUrl] = useState(null)
+  const [updateMessage, setUpdateMessage] = useState(null)
   // console.log(imageFile)
 
   const toggleIsSure = () => {
@@ -63,6 +64,10 @@ function DashboardProfile() {
 
       if (response.data.success === true) {
         dispatch(updateSuccess(response.data.data.user));
+        setUpdateMessage(response.data.message);
+        setTimeout(() => {
+          setUpdateMessage(null);
+        }, 3000);
       }
 
       if (response.data.success === false) {
@@ -183,6 +188,7 @@ function DashboardProfile() {
             {isSubmitting ? "loading..." : "Update"}
           </button>
         </form>
+        {updateMessage && <span className='text-green-500 mb-5 text-lg font-semibold text-center border-2 border-green-500 rounded-xl py-2 bg-green-100'>{updateMessage}</span>}
         
 
       {/* delete account */}
@@ -197,20 +203,20 @@ function DashboardProfile() {
         </button>
 
         <div className={`${isSure ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-full bg-transparent backdrop-blur-md`}>
-          <div className='p-6 rounded-xl w-80 bg-white border-2 border-red-200'>
+          <div className='p-6 rounded-xl w-96 bg-white border-2 border-red-200'>
             <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete your account?</p>
             <div className='flex justify-between'>
               <button
                 onClick={toggleIsSure}
                 className='p-3 px-6 mt-5 text-sky-500 text-lg font-semibold text-center border-2 border-sky-500 hover:bg-sky-200 rounded-xl bg-sky-100 duration-200'
               >
-                No
+                No, cancel
               </button>
 
               <button
                 className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
               >
-                Yes
+                Yes, I'm sure
               </button>
 
             </div>

@@ -39,7 +39,7 @@ function ProfileDropdown() {
         )}
       </div>
 
-      <div ref={dropdownRef} className={`${isOpen ? "scale-y-100" : "scale-y-0"} origin-top before:content-[''] before:absolute before:-top-2 before:right-3 before:w-4 before:h-4 before:rotate-45 before:bg-gray-50 before:border-l-2 before:border-t-2 before:border-gray-400 transition-all ease-in-out duration-200 absolute top-14 right-1 w-72 rounded-xl bg-gray-50 border-2 border-gray-400 text-black`}>
+      <div ref={dropdownRef} className={`${isOpen ? "scale-y-100" : "scale-y-0"} origin-top before:content-[''] before:absolute before:-top-2 before:right-3 before:w-4 before:h-4 before:rotate-45 before:bg-gray-50 before:border-l-2 before:border-t-2 before:border-gray-400 transition-all ease-in-out duration-200 absolute top-[70px] right-3 w-72 rounded-xl bg-gray-50 border-2 border-gray-400 text-black`}>
         <div>
           <div className='flex items-center gap-4 p-3'>
             <span className='w-16 h-16 rounded-full overflow-hidden'>
