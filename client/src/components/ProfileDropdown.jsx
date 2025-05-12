@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import axios from 'axios'
+import {signoutSuccess} from '../features/user/userSlice'
 import { Link } from 'react-router-dom'
 import { LuLogOut } from "react-icons/lu";
 import { FaTimes } from "react-icons/fa";
@@ -8,6 +10,7 @@ import default_image from "../assets/default_image.jpg";
 
 function ProfileDropdown() {
   const { currentUser } = useSelector((state) => state.user)
+  const dispatch = useDispatch()
   // console.log(currentUser.profilePicture)
   const [isOpen, setIsOpen] = useState(false) // for profile menu
   const dropdownRef = useRef(null);
@@ -28,7 +31,17 @@ function ProfileDropdown() {
     };
   }, []);
 
-
+  const handleSignout = async () => {
+    try {
+      const response = await axios.post("api/v1/auth/signout");
+      if (response.data.success === true) {
+        dispatch(signoutSuccess());
+        console.log(response.data.message);
+      }
+    } catch (error) {
+      
+    }
+  }
   return (
     <div>
       <div onClick={(toggleMenu)} className='w-10 h-10 rounded-full overflow-hidden cursor-pointer'>
@@ -63,7 +76,9 @@ function ProfileDropdown() {
             </Link>
             <Link onClick={toggleMenu} to="#" className='flex items-center gap-4 p-2 justify-center duration-200 hover:bg-gray-200'>
               <LuLogOut className='text-2xl' />
-              <span className='font-semibold hover:text-sky-500 duration-200 text-sm'>Logout</span>
+              <span
+              onClick={handleSignout}
+              className='font-semibold hover:text-sky-500 duration-200 text-sm'>Logout</span>
             </Link>
             <div onClick={toggleMenu} className='flex items-center gap-4 p-2 justify-center duration-200 hover:bg-gray-200'>
               <FaTimes className='text-2xl' />

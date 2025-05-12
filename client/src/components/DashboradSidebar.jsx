@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { IoMenu } from "react-icons/io5";
 import { FaTimes } from "react-icons/fa";
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { signoutSuccess } from '../features/user/userSlice'
+import axios from 'axios';
 import { NavLink, useLocation } from 'react-router-dom'
 import { MdDashboard } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
@@ -11,6 +13,7 @@ function DashboradSidebar() {
 
   const location = useLocation();
   const [tab, setTab] = useState("");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -28,6 +31,18 @@ function DashboradSidebar() {
   const toggleMenu = () => {
     setOpen(!open)
   }
+
+  const handleSignout = async () => {
+    try {
+      const response = await axios.post("api/v1/auth/signout");
+      if (response.data.success === true) {
+        dispatch(signoutSuccess());
+        console.log(response.data.message);
+      }
+    } catch (error) {
+
+    }
+  }
   return (
     <div className={`sm:h-full sm:w-56 w-full bg-gray-50 shadow-lg border-r-2 border-t-2 rounded-lg dark:bg-[#12171e] p-3 transition-all ease-in-out duration-300 text-black dark:text-white`}>
       <hr className='mt-14 sm:hidden' />
@@ -42,7 +57,7 @@ function DashboradSidebar() {
           <span>Menu</span>
           <button className='rounded-lg text-xl hover:bg-sky-300 p-2' onClick={toggleMenu}>{open ? <FaTimes /> : <IoMenu />}</button>
         </div>
-         <ul className={`flex flex-col gap-y-3 p-1 ${!open && "sm:flex hidden"}`}>
+        <ul className={`flex flex-col gap-y-3 p-1 ${!open && "sm:flex hidden"}`}>
 
           {/* <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
             <NavLink
@@ -64,13 +79,10 @@ function DashboradSidebar() {
           </li>
 
           <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
-            <NavLink
-              to="/logout"
-              className={`flex items-center justify-center gap-9`}>
+            <span className={`flex items-center justify-center gap-9`}>
               <span className='text-lg'><LuLogOut /></span>
-              <span>Logout</span>
-            </NavLink>
-
+              <span onClick={handleSignout}>Logout</span>
+            </span>
           </li>
         </ul>
       </div>
