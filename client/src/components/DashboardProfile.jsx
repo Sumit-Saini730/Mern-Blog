@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react'
 import Input from './Input'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 import default_image from "../assets/default_image.jpg";
 import { useForm } from "react-hook-form";
-import { updateStart, updateSuccess, updateFailure } from '../features/user/userSlice';
+import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../features/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 
 function DashboardProfile() {
 
-  const { currentUser } = useSelector((state) => state.user)
+  const { currentUser, error } = useSelector((state) => state.user)
   // console.log(currentUser)
 
   const [showPassword, setShowPassword] = useState(false)
@@ -92,6 +93,21 @@ function DashboardProfile() {
         // alert("An error occurred. Please try again.");
         dispatch(updateFailure("An error occurred. Please try again."));
       }
+    }
+  }
+  const handleDeleteUser = async () => {
+    setIsSure(false)
+    try {
+      dispatch(deleteUserStart())
+      const response = await axios.delete(`api/v1/users/delete/${currentUser._id}`)
+      if(response.data.success === true){
+        dispatch(deleteUserSuccess(response.data.message))
+      }
+      if(response.data.success === false){
+        dispatch(deleteUserFailure(response.data.message))
+      }
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message))
     }
   }
 
@@ -201,9 +217,13 @@ function DashboardProfile() {
         >
           Delete Account
         </button>
+        {error && <span className='text-red-500 mb-5 text-lg font-semibold text-center border-2 border-red-500 rounded-xl py-2 bg-red-100'>{error}</span>}
 
-        <div className={`${isSure ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-full bg-transparent backdrop-blur-md`}>
-          <div className='p-6 rounded-xl w-96 bg-white border-2 border-red-200'>
+        <div className={`${isSure ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-screen bg-transparent backdrop-blur-md`}>
+          <div className='p-6 rounded-xl w-96 bg-gray-100 border-2 border-red-300'>
+            <div>
+              <HiOutlineExclamationCircle className='text-6xl text-gray-500 mx-auto' />
+            </div>
             <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete your account?</p>
             <div className='flex justify-between'>
               <button
@@ -214,6 +234,7 @@ function DashboardProfile() {
               </button>
 
               <button
+                onClick={handleDeleteUser}
                 className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
               >
                 Yes, I'm sure
