@@ -44,7 +44,7 @@ function ProfileDropdown() {
   }
   return (
     <div>
-      <div onClick={(toggleMenu)} className='w-10 h-10 rounded-full overflow-hidden cursor-pointer'>
+      <div onClick={(toggleMenu)} className='w-10 h-10 rounded-full overflow-hidden cursor-pointer border border-gray-500'>
         {currentUser?.profilePicture ? (
           <img src={currentUser.profilePicture} alt="User_Profile" onError={(e) => e.target.src = default_image} />
         ) : (

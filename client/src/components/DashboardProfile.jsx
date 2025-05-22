@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../features/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import {Link} from "react-router-dom";
 
 
 function DashboardProfile() {
@@ -199,13 +200,23 @@ function DashboardProfile() {
 
           <button
             type='submit'
-            className={`my-10 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${isSubmitting ? "disabled" : ""}`}
+            className={`my-5 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${isSubmitting ? "disabled" : ""}`}
           >
             {isSubmitting ? "loading..." : "Update"}
           </button>
         </form>
         {updateMessage && <span className='text-green-500 mb-5 text-lg font-semibold text-center border-2 border-green-500 rounded-xl py-2 bg-green-100'>{updateMessage}</span>}
         
+        {currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <button
+              type='button'
+              className='w-full py-3 mb-5 text-white rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 focus:ring-2 focus:ring-sky-500 font-bold border-2 duration-200'
+            >
+              Create a post
+            </button>
+          </Link>
+        )}
 
       {/* delete account */}
       <div>

@@ -25,7 +25,7 @@ function DashboradSidebar() {
   }, [location.search])
 
   const { currentUser } = useSelector((state) => state.user)
-  const [isAdmin, setIsAdmin] = useState(true)
+  // const [isAdmin, setIsAdmin] = useState(true);
 
   const [open, setOpen] = useState(true)
   const toggleMenu = () => {
@@ -47,7 +47,7 @@ function DashboradSidebar() {
     <div className={`sm:h-full sm:w-56 w-full bg-gray-50 shadow-lg border-r-2 border-t-2 rounded-lg dark:bg-[#12171e] p-3 transition-all ease-in-out duration-300 text-black dark:text-white`}>
       <hr className='mt-14 sm:hidden' />
       <div className={`mt-2`}>
-        {isAdmin ? <h2 className={`font-bold text-center bg-gray-200 dark:bg-gray-700 rounded-lg`}>Admin</h2> : null}
+        <h2 className={`font-bold text-center bg-gray-200 dark:bg-gray-700 rounded-lg`}>{currentUser.isAdmin ? "Admin" : "User"}</h2>
         <p className='font-bold text-center whitespace-nowrap'>{currentUser.fullName}</p>
       </div>
 

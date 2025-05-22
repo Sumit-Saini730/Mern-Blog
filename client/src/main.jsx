@@ -16,6 +16,8 @@ import { store, persistor } from './store/store.js'
 import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 import PrivateRoute from './components/PrivateRoute.jsx'
+import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute.jsx"
+import CreatePost from './pages/CreatePost.jsx'
 
 
 
@@ -28,6 +30,9 @@ const router = createBrowserRouter(
       <Route path='signup' element={<SignUp />} />
       <Route element={<PrivateRoute />}>
         <Route path='dashboard' element={<Dashboard />} />
+      </Route>
+      <Route element={<OnlyAdminPrivateRoute />}>
+        <Route path='create-post' element={<CreatePost />} />
       </Route>
       <Route path='projects' element={<Projects />} />
       {/* <Route path='contact' element={<Contact />} /> */}

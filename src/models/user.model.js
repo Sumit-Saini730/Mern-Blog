@@ -40,6 +40,10 @@ const userSchema = new Schema(
         },
         refreshToken: {
             type: String
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false
         }
     }, 
     
@@ -84,7 +88,8 @@ userSchema.methods.generateAccessToken = function (){
     return jwt.sign(
         {
             id: this._id,
-            username: this.username
+            // username: this.username
+            isAdmin: this.isAdmin
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
