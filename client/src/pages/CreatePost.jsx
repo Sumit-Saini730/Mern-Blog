@@ -23,7 +23,7 @@ function CreatePost() {
             <button type='button' className='bg-white text-gray-900 hover:bg-gradient-to-r from-cyan-500 to-blue-500 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 font-bold border-2 border-sky-500 duration-200 hover:text-white transition p-4 rounded-lg'>Upload Image</button>
           </div>
 
-          <ReactQuill theme="snow" placeholder="Write something..." />
+          <ReactQuill theme="snow" placeholder="Write something..." className='h-72 mb-12 border-2'/>
         </form>
     </div>
   )

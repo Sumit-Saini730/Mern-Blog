@@ -3,5 +3,19 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+    height: 100vh;
 
+}
 
+.ql-editor{
+    font-size: 1.05rem;
+}
+
+.ql-toolbar, .ql-container{
+  background-color: white;
+}
+
+.ql-editor p{
+  color: black;
+}
