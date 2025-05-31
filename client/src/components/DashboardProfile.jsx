@@ -48,8 +48,8 @@ function DashboardProfile() {
   });
   const dispatch = useDispatch();
   const Submit = async (data) => {
-    console.log("printing data...")
-    console.log(data)
+    // console.log("printing data...")
+    // console.log(data)
     try {
       dispatch(updateStart());
 

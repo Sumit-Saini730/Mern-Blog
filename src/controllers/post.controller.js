@@ -5,7 +5,6 @@ import {Post} from "../models/post.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 
-
 const createPost = asyncHandler(async (req, res) => {
 
     if(req.user.isAdmin === false){
@@ -18,7 +17,7 @@ const createPost = asyncHandler(async (req, res) => {
     
     const author = req.user.id;
 
-    const slug = title.split(" ").join("-").toLowerCase().replace(/[^a-zA-Z0-9-]/g, "-");
+    const slug = title.split(" ").join("-").toLowerCase().replace(/[^a-zA-Z0-9-]/g, "");
 
     // const existingPost = await Post.findOne({slug});
 
