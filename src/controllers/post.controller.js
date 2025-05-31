@@ -2,7 +2,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
 import {Post} from "../models/post.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deletePreviousFile } from "../utils/cloudinary.js";
 
 
 const createPost = asyncHandler(async (req, res) => {
@@ -19,11 +19,11 @@ const createPost = asyncHandler(async (req, res) => {
 
     const slug = title.split(" ").join("-").toLowerCase().replace(/[^a-zA-Z0-9-]/g, "");
 
-    // const existingPost = await Post.findOne({slug});
+    const existingPost = await Post.findOne({slug});
 
-    // if(existingPost){
-    //     throw new ApiError(400, "Post with same title already exists")
-    // }
+    if(existingPost){
+        throw new ApiError(400, "Post with same title already exists")
+    }
 
     if(!req.file?.path){
         throw new ApiError(400, "Post image is required")
