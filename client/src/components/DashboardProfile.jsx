@@ -113,7 +113,7 @@ function DashboardProfile() {
   }
 
   return (
-    <div className='flex flex-col h-screen mt-8 p-6 sm:p-0 sm:w-4/6 md:w-1/2 w-full mx-auto'>
+    <div className='flex flex-col h-screen mt-5 p-6 sm:p-0 sm:w-4/6 md:w-1/2 w-full mx-auto'>
       <h1 className='text-3xl text-center font-bold mb-5'>Profile</h1>
 
         <form onSubmit={handleSubmit(Submit)} encType='multipart/form-data'>
@@ -150,7 +150,7 @@ function DashboardProfile() {
 
           </div>
 
-          <div className='flex flex-col gap-y-3 mt-5'>
+          <div className='flex flex-col gap-y-3'>
             <div>
               <Input
                 type="text"
@@ -219,7 +219,7 @@ function DashboardProfile() {
         )}
 
       {/* delete account */}
-      <div>
+      <div className=''>
         <button
           type='button'
           onClick={toggleIsSure}

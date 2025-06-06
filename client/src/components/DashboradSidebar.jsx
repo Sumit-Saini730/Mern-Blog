@@ -9,6 +9,7 @@ import { MdDashboard } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
 import { IoMdSettings } from "react-icons/io";
+import { HiDocumentText } from 'react-icons/hi';
 function DashboradSidebar() {
 
   const location = useLocation();
@@ -77,6 +78,19 @@ function DashboradSidebar() {
               <span>Profile</span>
             </NavLink>
           </li>
+          {
+            currentUser.isAdmin &&
+            <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
+              <NavLink
+                to="/dashboard?tab=posts"
+                className={`${tab === "posts" ? "text-sky-500" : ""} flex items-center justify-center gap-9`}>
+                <span className='text-lg'><HiDocumentText /></span>
+                <span>Posts
+                </span>
+              </NavLink>
+            </li>
+          }
+
 
           <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
             <span className={`flex items-center justify-center gap-9`}>
