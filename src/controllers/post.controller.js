@@ -66,7 +66,7 @@ const getPosts = asyncHandler(async (req, res) => {
     const sortDirection = req.query.order === "asc" ? 1 : -1;
 
     const posts = await Post.find({
-        ...req.query.userId && {userId: req.query.userId},
+        ...req.query.author && {author: req.query.author},
         ...req.query.category && {category: req.query.category},
         ...req.query.slug && {slug: req.query.slug},
         ...req.query.postId && {_id: req.query.postId},

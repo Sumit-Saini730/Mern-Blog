@@ -19,3 +19,14 @@ body{
 .ql-editor p{
   color: black;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #e5e7eb; /* slate-200 */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #6b7280; /* slate-500 */
+  border-radius: 8px;
+}

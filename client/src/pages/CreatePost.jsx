@@ -67,6 +67,7 @@ function CreatePost() {
             <option value="javascript">JavaScript</option>
             <option value="reactjs">React.js</option>
             <option value="nextjs">Next.js</option>
+            <option value="landscape">Landscape</option>
           </select>
         </div>
         <div className='flex items-center border-4 border-sky-500 rounded-xl p-3'>
