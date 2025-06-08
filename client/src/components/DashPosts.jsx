@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom'
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 
 function DashPosts() {
 
   const { currentUser } = useSelector((state) => state.user)
   const [userPosts, setUserPosts] = useState([])
   const [showMore, setShowMore] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [postIdToDelete, setPostIdToDelete] = useState(null)
   // console.log(userPosts)
 
   useEffect(() => {
@@ -37,7 +41,7 @@ function DashPosts() {
       const response = await axios.get(`api/v1/posts/getposts?author=${currentUser._id}&startIndex=${startIndex}`)
       console.log(response)
 
-      if(response.data.success === true){
+      if (response.data.success === true) {
         setUserPosts(prev => [...prev, ...response.data.data.posts]);
         if (response.data.data.posts.length < 9) {
           setShowMore(false)
@@ -48,6 +52,21 @@ function DashPosts() {
     }
   }
 
+  const handleDeletePost = async () => {
+    setShowModal(false)
+    try {
+      const response = await axios.delete(`api/v1/posts/delete/${postIdToDelete}/${currentUser._id}`)
+      // console.log(response)
+      if(response.data.success === false){
+        alert(response.data.message)
+      }
+      if (response.data.success === true) {
+        setUserPosts((prev) => prev.filter(post => post._id !== postIdToDelete))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className="overflow-x-auto p-4 md:mx-auto max-w-screen-lg custom-scrollbar">
@@ -87,7 +106,12 @@ function DashPosts() {
                   </td>
                   <td className="px-4 py-2 capitalize">{post.category}</td>
                   <td className="px-4 py-2">
-                    <span className="cursor-pointer text-red-600 hover:underline font-medium">Delete</span>
+                    <span
+                      onClick={() => {
+                        setShowModal(true)
+                        setPostIdToDelete(post._id)
+                      }}
+                      className="cursor-pointer text-red-600 hover:underline font-medium">Delete</span>
                   </td>
                   <td className="px-4 py-2">
                     <Link to={`update-post/${post._id}`}>
@@ -101,8 +125,8 @@ function DashPosts() {
           {showMore &&
             <div className='w-full flex justify-center py-2'>
               <button
-              onClick={handleShowMore} 
-              className="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 duration-200 transition">Show More</button>
+                onClick={handleShowMore}
+                className="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600 duration-200 transition">Show More</button>
             </div>
           }
         </>
@@ -110,6 +134,30 @@ function DashPosts() {
       ) : (
         <p className="text-center text-gray-500 dark:text-gray-300">No posts to show</p>
       )}
+
+      <div className={`${showModal ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-screen bg-transparent backdrop-blur-md`}>
+        <div className='p-6 rounded-xl w-96 bg-gray-100 border-2 border-red-300'>
+          <div>
+            <HiOutlineExclamationCircle className='text-6xl text-gray-500 mx-auto' />
+          </div>
+          <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete this post?</p>
+          <div className='flex justify-between'>
+            <button
+              onClick={() => setShowModal(false)}
+              className='p-3 px-6 mt-5 text-sky-500 text-lg font-semibold text-center border-2 border-sky-500 hover:bg-sky-200 rounded-xl bg-sky-100 duration-200'
+            >
+              No, cancel
+            </button>
+
+            <button
+              onClick={handleDeletePost}
+              className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
+            >
+              Yes, I'm sure
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   )

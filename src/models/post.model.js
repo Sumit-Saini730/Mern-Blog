@@ -28,6 +28,10 @@ const postSchema = new Schema(
             type: String,
             required: true,
             unique: true
+        },
+        postImageId: {
+            type: String,
+            required: true
         }
     },
     {

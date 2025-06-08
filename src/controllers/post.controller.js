@@ -43,7 +43,8 @@ const createPost = asyncHandler(async (req, res) => {
         author: author,
         category: category || "uncategorized",
         slug: slug,
-        image: uploadResponse.url
+        image: uploadResponse.url,
+        postImageId: uploadResponse.public_id
     })
 
     const createdPost = await Post.findById(newPost._id);
@@ -100,7 +101,31 @@ const getPosts = asyncHandler(async (req, res) => {
         ))
 })
 
+const deletePost = asyncHandler(async (req, res) => {
+    
+    if(req.user.isAdmin === false || req.user.id.toString() !== req.params.userId){
+        throw new ApiError(401, "You are not authorized to delete this post")
+    }
+
+    const post = await Post.findById(req.params.postId);
+    await Post.findByIdAndDelete(req.params.postId)
+
+    const deleteResponse = await deletePreviousFile(post.postImageId);
+
+    if(!deleteResponse){
+        throw new ApiError(400, "Error while deleting post image on cloudinary")
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "Post deleted successfully"
+        ))
+})
+
 export {
     createPost,
-    getPosts
+    getPosts,
+    deletePost
 }
