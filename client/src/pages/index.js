@@ -5,6 +5,8 @@ import Projects from "./Projects";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Contact from "./Contact";
+import CreatePost from "./CreatePost";
+import UpdatePost from "./UpdatePost"; 
 
 export { 
     About, 
@@ -13,5 +15,7 @@ export {
     Projects, 
     SignIn, 
     SignUp,
-    Contact
+    Contact,
+    CreatePost,
+    UpdatePost
 }

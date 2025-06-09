@@ -114,7 +114,7 @@ function DashPosts() {
                       className="cursor-pointer text-red-600 hover:underline font-medium">Delete</span>
                   </td>
                   <td className="px-4 py-2">
-                    <Link to={`update-post/${post._id}`}>
+                    <Link to={`/update-post/${post._id}`}>
                       <span className="text-sky-500 hover:underline font-medium">Edit</span>
                     </Link>
                   </td>

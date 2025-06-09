@@ -1,31 +1,31 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
-import {Post} from "../models/post.model.js";
+import { Post } from "../models/post.model.js";
 import { uploadOnCloudinary, deletePreviousFile } from "../utils/cloudinary.js";
 
 
 const createPost = asyncHandler(async (req, res) => {
 
-    if(req.user.isAdmin === false){
+    if (req.user.isAdmin === false) {
         throw new ApiError(401, "You are not authorized to create a post")
     }
-    const {title, category, content} = req.body;
-    if(!title || !content){
+    const { title, category, content } = req.body;
+    if (!title || !content) {
         throw new ApiError(400, "All fields are required")
     }
-    
+
     const author = req.user.id;
 
     const slug = title.split(" ").join("-").toLowerCase().replace(/[^a-zA-Z0-9-]/g, "");
 
-    const existingPost = await Post.findOne({slug});
+    const existingPost = await Post.findOne({ slug });
 
-    if(existingPost){
+    if (existingPost) {
         throw new ApiError(400, "Post with same title already exists")
     }
 
-    if(!req.file?.path){
+    if (!req.file?.path) {
         throw new ApiError(400, "Post image is required")
     }
 
@@ -33,8 +33,8 @@ const createPost = asyncHandler(async (req, res) => {
 
     const uploadResponse = await uploadOnCloudinary(postImageLocalPath);
 
-    if(!uploadResponse.url){
-        throw new ApiError(400, "Error while uploading post image")
+    if (!uploadResponse.url) {
+        throw new ApiError(400, "Error while uploading post image on cloudinary")
     }
 
     const newPost = await Post.create({
@@ -48,14 +48,14 @@ const createPost = asyncHandler(async (req, res) => {
     })
 
     const createdPost = await Post.findById(newPost._id);
-    if(!createdPost){
+    if (!createdPost) {
         throw new ApiError(400, "Error while creating post")
     }
     return res
         .status(200)
         .json(new ApiResponse(
             200,
-            {post: createdPost},
+            { post: createdPost },
             "Post created successfully"
         ))
 })
@@ -67,17 +67,17 @@ const getPosts = asyncHandler(async (req, res) => {
     const sortDirection = req.query.order === "asc" ? 1 : -1;
 
     const posts = await Post.find({
-        ...req.query.author && {author: req.query.author},
-        ...req.query.category && {category: req.query.category},
-        ...req.query.slug && {slug: req.query.slug},
-        ...req.query.postId && {_id: req.query.postId},
+        ...req.query.author && { author: req.query.author },
+        ...req.query.category && { category: req.query.category },
+        ...req.query.slug && { slug: req.query.slug },
+        ...req.query.postId && { _id: req.query.postId },
         ...req.query.search && {
             $or: [
-                {title: {$regex: req.query.search, $options: "i"}},
-                {content: {$regex: req.query.search, $options: "i"}}
+                { title: { $regex: req.query.search, $options: "i" } },
+                { content: { $regex: req.query.search, $options: "i" } }
             ]
         }
-    }).sort({updatedAt: sortDirection}).skip(startIndex).limit(limit);
+    }).sort({ updatedAt: sortDirection }).skip(startIndex).limit(limit);
 
     const totalPosts = await Post.countDocuments();
 
@@ -86,7 +86,7 @@ const getPosts = asyncHandler(async (req, res) => {
     const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
 
     const lastMonthPosts = await Post.countDocuments({
-        createdAt: {$gte: oneMonthAgo}
+        createdAt: { $gte: oneMonthAgo }
     })
 
     return res
@@ -102,8 +102,8 @@ const getPosts = asyncHandler(async (req, res) => {
 })
 
 const deletePost = asyncHandler(async (req, res) => {
-    
-    if(req.user.isAdmin === false || req.user.id.toString() !== req.params.userId){
+
+    if (req.user.isAdmin === false || req.user.id.toString() !== req.params.userId) {
         throw new ApiError(401, "You are not authorized to delete this post")
     }
 
@@ -112,7 +112,7 @@ const deletePost = asyncHandler(async (req, res) => {
 
     const deleteResponse = await deletePreviousFile(post.postImageId);
 
-    if(!deleteResponse){
+    if (!deleteResponse) {
         throw new ApiError(400, "Error while deleting post image on cloudinary")
     }
     return res
@@ -124,8 +124,75 @@ const deletePost = asyncHandler(async (req, res) => {
         ))
 })
 
+const updatePost = asyncHandler(async (req, res) => {
+
+    if (req.user.isAdmin === false || req.user.id.toString() !== req.params.userId) {
+        throw new ApiError(401, "You are not authorized to update this post")
+    }
+
+    const { title, category, content } = req.body;
+    // console.log(req.body)
+    if (!title || !content) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const slug = title.split(" ").join("-").toLowerCase().replace(/[^a-zA-Z0-9-]/g, "");
+
+    const existingPost = await Post.findById(req.params.postId);
+
+    if (!existingPost) {
+        throw new ApiError(400, "Post not found")
+    }
+
+    const updatePost = {
+        title: title,
+        content: content,
+        category: category,
+        slug: slug
+    }
+
+    let uploadResponse;
+    if (req.file?.path) {
+        const postImageLocalPath = req.file?.path;
+        uploadResponse = await uploadOnCloudinary(postImageLocalPath);
+
+        if (!uploadResponse.url) {
+            throw new ApiError(400, "Error while uploading post image on cloudinary")
+        }
+        updatePost.image = uploadResponse.url;
+        updatePost.postImageId = uploadResponse.public_id;
+    }
+
+    const updatedPost = await Post.findByIdAndUpdate(
+        req.params.postId,
+        {
+            $set: updatePost
+        },
+        { new: true }
+    )
+
+    if (!updatedPost) {
+        throw new ApiError(400, "Error while updating post")
+    }
+
+    const prevImageFileDeletionResponse = await deletePreviousFile(existingPost.postImageId);
+
+    if (!prevImageFileDeletionResponse) {
+        throw new ApiError(400, "Error while deleting previous post image on cloudinary")
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            { post: updatedPost },
+            "Post updated successfully"
+        ))
+})
+
 export {
     createPost,
     getPosts,
-    deletePost
+    deletePost,
+    updatePost
 }

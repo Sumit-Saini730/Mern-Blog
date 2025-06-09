@@ -11,8 +11,17 @@ function CreatePost() {
   const { register, setValue, handleSubmit, control, formState: { errors, isSubmitting } } = useForm();
   const [publishResponse, setPublishResponse] = useState(null);
   const [publishError, setPublishError] = useState(null);
+  const [tempImageUrl, setTempImageUrl] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    // console.log("handleImageChange called")
+    const file = e.target.files[0];
+    if(file){
+      setTempImageUrl(URL.createObjectURL(file));
+    }
+  }
 
   const Submit = async (data) => {
     // console.log(data)
@@ -77,6 +86,7 @@ function CreatePost() {
             type="file"
             accept='image/*'
             {...register("postImage", {
+              onChange: handleImageChange,
               required: true,
               validate: {
                 fileSize: (file) => {
@@ -88,6 +98,11 @@ function CreatePost() {
           />
           {errors.postImage && <p className='text-red-500 m-2'>{errors.postImage.message}</p>}
         </div>
+        {tempImageUrl && 
+          <div className='rounded-xl overflow-hidden'>
+            <img className='w-full ' src={tempImageUrl} alt="postImage" />
+          </div>
+        }
 
         <div className='rounded-xl overflow-hidden'>
           <Controller
