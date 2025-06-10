@@ -89,7 +89,7 @@ const updateUser = asyncHandler(async (req, res) => {
 })
 
 const deleteUser = asyncHandler(async(req,res) => {
-    if(req.user.id !== req.params.userId){
+    if(req.user.isAdmin === false && req.user.id !== req.params.userId){
         throw new ApiError(401, "Unauthorized request")
     }
 
@@ -108,9 +108,48 @@ const deleteUser = asyncHandler(async(req,res) => {
             "User deleted successfully"
         ))
 })
+
+const getUsers = asyncHandler(async(req, res) => {
+    if(req.user.isAdmin === false){
+        throw new ApiError(401, "Unauthorized request")
+    }
+    
+    const startIndex = Number(req.query.startIndex) || 0;
+    const limit = Number(req.query.limit) || 9;
+    const sortDirection = req.query.order === "asc" ? 1 : -1;
+
+    const users = await User.find()
+        .select("-password -refreshToken -profilePictureId")
+        .sort({ createdAt: sortDirection })
+        .skip(startIndex)
+        .limit(limit);
+
+    const totalUsers = await User.countDocuments();
+
+    const now = new Date();
+
+    const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+
+    const lastMonthUsers = await User.countDocuments({
+        createdAt: { $gte: oneMonthAgo }
+    })
+
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {
+                users,
+                totalUsers,
+                lastMonthUsers
+            },
+            "Users fetched successfully"
+        ))
+})
 export {
     test,
     updateUser,
     getCurrentUser,
-    deleteUser
+    deleteUser,
+    getUsers
 }

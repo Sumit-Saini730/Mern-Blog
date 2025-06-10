@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { test } from "../controllers/user.controller.js";
+import { getUsers, test } from "../controllers/user.controller.js";
 import verifyJWT from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import { updateUser } from "../controllers/user.controller.js";
@@ -21,5 +21,6 @@ router.route("/update/:userId").patch(
     updateUser
 );
 router.route("/delete/:userId").delete(verifyJWT, deleteUser);
+router.route("/getusers").get(verifyJWT, getUsers);
 
 export default router;

@@ -47,7 +47,7 @@ const createPost = asyncHandler(async (req, res) => {
         postImageId: uploadResponse.public_id
     })
 
-    const createdPost = await Post.findById(newPost._id);
+    const createdPost = await Post.findById(newPost._id).select("-postImageId");
     if (!createdPost) {
         throw new ApiError(400, "Error while creating post")
     }
@@ -77,7 +77,7 @@ const getPosts = asyncHandler(async (req, res) => {
                 { content: { $regex: req.query.search, $options: "i" } }
             ]
         }
-    }).sort({ updatedAt: sortDirection }).skip(startIndex).limit(limit);
+    }).sort({ updatedAt: sortDirection }).skip(startIndex).limit(limit).select("-postImageId");
 
     const totalPosts = await Post.countDocuments();
 
@@ -169,7 +169,7 @@ const updatePost = asyncHandler(async (req, res) => {
             $set: updatePost
         },
         { new: true }
-    )
+    ).select("-postImageId");
 
     if (!updatedPost) {
         throw new ApiError(400, "Error while updating post")
