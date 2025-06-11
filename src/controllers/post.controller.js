@@ -175,11 +175,14 @@ const updatePost = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Error while updating post")
     }
 
-    const prevImageFileDeletionResponse = await deletePreviousFile(existingPost.postImageId);
+    if (!req.file?.path) {
+        const prevImageFileDeletionResponse = await deletePreviousFile(existingPost.postImageId);
 
-    if (!prevImageFileDeletionResponse) {
-        throw new ApiError(400, "Error while deleting previous post image on cloudinary")
+        if (!prevImageFileDeletionResponse) {
+            throw new ApiError(400, "Error while deleting previous post image on cloudinary")
+        }
     }
+
 
     return res
         .status(200)

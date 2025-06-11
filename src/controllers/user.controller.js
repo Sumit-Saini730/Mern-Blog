@@ -99,7 +99,7 @@ const deleteUser = asyncHandler(async(req,res) => {
             throw new ApiError(400, "Error while deleting previous profile picture");
         }
     }
-    await User.findByIdAndDelete(req.user.id);
+    await User.findByIdAndDelete(req.params.userId);
     return res
         .status(200)
         .json(new ApiResponse(

@@ -19,6 +19,7 @@ import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 import PrivateRoute from './components/PrivateRoute.jsx'
 import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute.jsx"
+import PostPage from './components/PostPage.jsx'
 
 
 
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
         <Route path='update-post/:postId' element={<UpdatePost />} />
       </Route>
       <Route path='projects' element={<Projects />} />
+      <Route path='post/:postSlug' element={<PostPage />} />
       {/* <Route path='contact' element={<Contact />} /> */}
     </Route>
   )

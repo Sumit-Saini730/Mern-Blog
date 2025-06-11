@@ -15,7 +15,7 @@ function Footer() {
 
           <div className='grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3'>
             <div>
-              <h2 className='mb-3 font-bold uppercase'>about</h2>
+              <h2 className='mb-3 font-bold uppercase dark:text-white'>about</h2>
               <ul>
                 <li>
                   <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Mern Projects</Link>
@@ -26,7 +26,7 @@ function Footer() {
               </ul>
             </div>
             <div>
-              <h2 className='mb-3 font-bold uppercase'>contact us</h2>
+              <h2 className='mb-3 font-bold uppercase dark:text-white'>contact us</h2>
               <ul>
                 <li>
                   <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Github</Link>
@@ -37,7 +37,7 @@ function Footer() {
               </ul>
             </div>
             <div>
-              <h2 className='mb-3 font-bold uppercase'>legal</h2>
+              <h2 className='mb-3 font-bold uppercase dark:text-white'>legal</h2>
               <ul>
                 <li>
                   <Link to="#" className='hover:underline pb-2 text-sm font-semibold'>Privacy Policy</Link>
