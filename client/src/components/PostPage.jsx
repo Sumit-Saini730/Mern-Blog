@@ -3,6 +3,8 @@ import Spinner from "./Spinner.jsx"
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
+import CallToAction from './CallToAction.jsx'
+import CommentSection from './CommentSection.jsx'
 
 function PostPage() {
   const { postSlug } = useParams()
@@ -63,8 +65,13 @@ function PostPage() {
           </div>
 
           <div className='p-3 mt-5 max-w-2xl mx-auto w-full post-content' dangerouslySetInnerHTML={{ __html: post && post.content }}>
-
           </div>
+
+          <div className='max-w-4xl mx-auto w-full'>
+            <CallToAction />
+          </div>
+
+          <CommentSection postId={post._id}/>
         </main>
   )
 }
