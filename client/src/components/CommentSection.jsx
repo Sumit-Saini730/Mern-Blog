@@ -49,6 +49,30 @@ function CommentSection({ postId }) {
         }
         fetchComments()
     }, [postId])
+
+    const handleLikes = async (commentId) => {
+        if (!currentUser) {
+            // alert("You must be signed in to like a comment")
+            return
+        }
+        try {
+            const response = await axios.put(`/api/v1/comments/likecomment/${commentId}`)
+            // console.log(response)
+
+            if (response.data.success === true) {
+                setComments((prev) => prev.map((comment) => comment._id === commentId ? {
+                    ...comment,
+                    likes: response.data.data.comment.likes,
+                    numberOfLikes: response.data.data.comment.numberOfLikes
+                }
+                    : comment)
+                )
+            }
+
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
     return (
         <div className='max-w-2xl mx-auto w-full p-3'>
             {
@@ -103,7 +127,7 @@ function CommentSection({ postId }) {
 
                             {
                                 comments.map((comment) => (
-                                    <Comment key={comment._id} comment={comment} />
+                                    <Comment key={comment._id} comment={comment} onLike={handleLikes} />
                                 ))
                             }
                         </>
