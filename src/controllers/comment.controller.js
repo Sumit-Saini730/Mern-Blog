@@ -47,6 +47,34 @@ const getComments = asyncHandler(async (req, res) => {
     );
 });
 
+const updateComment = asyncHandler(async (req, res) => {
+    const { content } = req.body;
+
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+        throw new ApiError(404, "Comment not found")
+    }
+
+    if (req.user.id !== comment.userId && req.user.isAdmin === false) {
+        throw new ApiError(401, "You are not authorized to update this comment")
+    }
+
+    const updatedComment = await Comment.findByIdAndUpdate(req.params.commentId, {
+        content: content
+    }, { new: true });
+    if (!updatedComment) {
+        throw new ApiError(400, "Error while updating comment")
+    }
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { comment: updatedComment },
+            "Comment updated successfully"
+        )
+    );
+});
+
 const likeComment = asyncHandler(async (req, res) => {
     const comment = await Comment.findById(req.params.commentId);
 
@@ -84,10 +112,11 @@ const likeComment = asyncHandler(async (req, res) => {
         );
     }
 
-    
+
 })
 export {
     createComment,
     getComments,
-    likeComment
+    likeComment,
+    updateComment
 }
