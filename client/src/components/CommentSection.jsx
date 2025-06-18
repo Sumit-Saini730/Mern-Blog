@@ -5,16 +5,23 @@ import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import { useEffect } from 'react'
 import Comment from './Comment'
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 
 function CommentSection({ postId }) {
     const { currentUser } = useSelector((state) => state.user)
     const [comment, setComment] = useState('')
     const [commentError, setCommentError] = useState(null)
     const [comments, setComments] = useState([])
+    const [isSure, setIsSure] = useState(false)
+    const [commentToDelete, setCommentToDelete] = useState(null)
     const { register, handleSubmit } = useForm()
 
     // console.log(comments)
 
+    const toggleIsSure = () => {
+    setIsSure(!isSure)
+  }
     const submit = async (data) => {
         // console.log(data)
         if (comment.length > 200 || comment.length < 1) return
@@ -75,7 +82,25 @@ function CommentSection({ postId }) {
     }
 
     const handleCommentUpdate = async (comment, updatedComment) => {
-        setComments( (prev) => prev.map((c) => c._id === comment._id ? { ...c, content: updatedComment } : c) )
+        setComments((prev) => prev.map((c) => c._id === comment._id ? { ...c, content: updatedComment } : c))
+    }
+
+    const handleCommentDelete = async (commentId) => {
+        try {
+            if(!currentUser){
+                alert("You must be signed in to delete a comment")
+                return
+            }
+            const response = await axios.delete(`/api/v1/comments/deletecomment/${commentId}`)
+            if (response.data.success === false) {
+                alert(response.data.message)
+            }
+            if (response.data.success === true) {
+                setComments((prev) => prev.filter((comment) => comment._id !== commentId))
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <div className='max-w-2xl mx-auto w-full p-3'>
@@ -131,12 +156,44 @@ function CommentSection({ postId }) {
 
                             {
                                 comments.map((comment) => (
-                                    <Comment key={comment._id} comment={comment} onLike={handleLikes} onUpdate={handleCommentUpdate} />
+                                    <Comment key={comment._id} comment={comment} onLike={handleLikes} onUpdate={handleCommentUpdate} onDelete={(commentId) => {
+                                        setIsSure(true)
+                                        setCommentToDelete(commentId)
+                                    }
+                                    } />
                                 ))
                             }
                         </>
                     )
             }
+            <div className={`${isSure ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-screen bg-transparent backdrop-blur-md`}>
+                <div className='p-6 rounded-xl w-96 bg-gray-100 border-2 border-red-300'>
+                    <div>
+                        <HiOutlineExclamationCircle className='text-6xl text-gray-500 mx-auto' />
+                    </div>
+                    <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete this comment?</p>
+                    <div className='flex justify-between'>
+                        <button
+                            onClick={toggleIsSure}
+                            className='p-3 px-6 mt-5 text-sky-500 text-lg font-semibold text-center border-2 border-sky-500 hover:bg-sky-200 rounded-xl bg-sky-100 duration-200'
+                        >
+                            No, cancel
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                handleCommentDelete(commentToDelete)
+                                toggleIsSure()
+                            }}
+
+                            className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
+                        >
+                            Yes, I'm sure
+                        </button>
+
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

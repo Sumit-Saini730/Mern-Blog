@@ -5,12 +5,14 @@ import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
 import CallToAction from './CallToAction.jsx'
 import CommentSection from './CommentSection.jsx'
+import PostCard from './PostCard.jsx'
 
 function PostPage() {
   const { postSlug } = useParams()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [post, setPost] = useState(null)
+  const [recentPosts, setRecentPosts] = useState([])
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -37,6 +39,20 @@ function PostPage() {
     }
     fetchPost()
   }, [postSlug])
+
+  useEffect(() => {
+    const fetchRecentPosts = async () => {
+      try {
+        const response = await axios.get(`/api/v1/posts/getposts?limit=3`)
+        if (response.data.success === true) {
+          setRecentPosts(response.data.data.posts)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchRecentPosts()
+  }, [])
 
   if(loading) return (
     <div className='min-h-screen flex items-center justify-center'>
@@ -72,6 +88,18 @@ function PostPage() {
           </div>
 
           <CommentSection postId={post._id}/>
+
+          <div className='flex flex-col justify-center items-center mb-5'>
+            <h1 className='text-xl mt-5'>Recent articles</h1>
+            <div className="flex flex-wrap gap-5 mt-5 justify-center">
+              {
+                recentPosts && 
+                recentPosts.map((post) => (
+                  <PostCard key={post._id} post={post} />
+                ))
+              }
+            </div>
+          </div>
         </main>
   )
 }

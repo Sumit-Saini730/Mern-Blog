@@ -114,9 +114,32 @@ const likeComment = asyncHandler(async (req, res) => {
 
 
 })
+
+const deleteComment = asyncHandler(async (req, res) => {
+
+    const comment = await Comment.findById(req.params.commentId);
+
+    if (!comment) {
+        throw new ApiError(404, "Comment not found")
+    }
+
+    if (req.user.id !== comment.userId && req.user.isAdmin === false) {
+        throw new ApiError(401, "You are not authorized to delete this comment")
+    }
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+    return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            {},
+            "Comment deleted successfully"
+        ))
+})
 export {
     createComment,
     getComments,
     likeComment,
-    updateComment
+    updateComment,
+    deleteComment
 }

@@ -4,7 +4,7 @@ import moment from "moment"
 import { FaThumbsUp } from "react-icons/fa"
 import { useSelector } from 'react-redux'
 
-function Comment({ comment, onLike, onUpdate }) {
+function Comment({ comment, onLike, onUpdate, onDelete }) {
     const [user, setUser] = useState({})
     const { currentUser } = useSelector((state) => state.user)
     const [isEditing, setIsEditing] = useState(false)
@@ -59,17 +59,17 @@ function Comment({ comment, onLike, onUpdate }) {
                 {
                     isEditing ? (
                         <>
-                        <textarea 
-                        value={updatedComment}
-                        onChange={(e) => setUpdatedComment(e.target.value)}
-                        className='w-full p-2 border border-gray-500 rounded-md focus:bg-sky-50 focus:outline-none focus:border-sky-500 mb-2'></textarea>
+                            <textarea
+                                value={updatedComment}
+                                onChange={(e) => setUpdatedComment(e.target.value)}
+                                className='w-full p-2 border border-gray-500 rounded-md focus:bg-sky-50 focus:outline-none focus:border-sky-500 mb-2'></textarea>
 
-                        <div className='flex justify-end pr-2 gap-2'>
-                            <button
-                            onClick={handleSave}
-                            type='button' className='mr-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 duration-100'>Save</button>
-                            <button onClick={() => setIsEditing(false)} type='button' className='p-2 bg-gray-500 text-white rounded-md duration-100 hover:bg-gray-600 active:bg-gray-700'>Cancel</button>
-                        </div>
+                            <div className='flex justify-end pr-2 gap-2'>
+                                <button
+                                    onClick={handleSave}
+                                    type='button' className='mr-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 duration-100'>Save</button>
+                                <button onClick={() => setIsEditing(false)} type='button' className='p-2 bg-gray-500 text-white rounded-md duration-100 hover:bg-gray-600 active:bg-gray-700'>Cancel</button>
+                            </div>
                         </>
                     ) : (
                         <>
@@ -85,11 +85,20 @@ function Comment({ comment, onLike, onUpdate }) {
 
                                 {
                                     currentUser && (currentUser._id === comment.userId || currentUser.isAdmin) && (
-                                        <button onClick={handleCommentUpdate} className='text-gray-400 hover:text-blue-500'>
-                                            Edit
-                                        </button>
+                                        <>
+                                            <button onClick={handleCommentUpdate} className='text-gray-400 hover:text-blue-500'>
+                                                Edit
+                                            </button>
+
+                                            <button onClick={() => onDelete(comment._id)} className='text-gray-400 hover:text-blue-500'>
+                                                Delete
+                                            </button>
+                                        </>
                                     )
                                 }
+
+
+
                             </div>
                         </>
                     )
