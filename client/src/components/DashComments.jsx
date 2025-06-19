@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useSelector } from "react-redux"
-import { FaCheck, FaTimes} from "react-icons/fa";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import default_image from "../assets/default_image.jpg"
 import Spinner from "./Spinner.jsx"
 
-function DashUsers() {
+
+function DashComments() {
   const { currentUser } = useSelector((state) => state.user)
-  const [users, setUsers] = useState([])
+  const [comments, setComments] = useState([])
   const [showMore, setShowMore] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [userIdToDelete, setUserIdToDelete] = useState(null)
+  const [commentIdToDelete, setCommentIdToDelete] = useState(null)
   const [loading, setLoading] = useState(true)
-  // console.log(userPosts)
 
   useEffect(() => {
-    const users = async () => {
+    const comments = async () => {
       setLoading(true)
       try {
-        const response = await axios.get(`/api/v1/users/getusers`)
+        const response = await axios.get(`/api/v1/comments/getallcomments`)
         // console.log(response)
         if (response.data.success === true) {
-          setUsers(response.data.data.users)
+          setComments(response.data.data.comments)
           setLoading(false)
-          if (response.data.data.users.length < 9) {
+          if (response.data.data.comments.length < 9) {
             setShowMore(false)
           }
         }
@@ -33,15 +32,15 @@ function DashUsers() {
       }
     }
     if (currentUser.isAdmin) {
-      users()
+      comments()
     }
   }, [])
 
   const handleShowMore = async () => {
-    const startIndex = users.length;
+    const startIndex = comments.length;
 
     try {
-      const response = await axios.get(`api/v1/posts/getusers?startIndex=${startIndex}`)
+      const response = await axios.get(`api/v1/comments/getallcomments?startIndex=${startIndex}`)
       console.log(response)
 
       if (response.data.success === true) {
@@ -55,23 +54,23 @@ function DashUsers() {
     }
   }
 
-  const handleDeleteUser = async () => {
+  const handleDeleteComment = async () => {
     setShowModal(false)
     try {
-      const response = await axios.delete(`api/v1/users/delete/${userIdToDelete}`)
+      const response = await axios.delete(`api/v1/comments/deletecomment/${commentIdToDelete}`)
       // console.log(response)
-      if(response.data.success === false){
+      if (response.data.success === false) {
         alert(response.data.message)
       }
       if (response.data.success === true) {
-        setUsers((prev) => prev.filter(user => user._id !== userIdToDelete))
+        setComments((prev) => prev.filter(comment => comment._id !== commentIdToDelete))
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  if(loading) return (
+  if (loading) return (
     <div className='min-h-screen flex items-center justify-center'>
       <Spinner />
     </div>
@@ -79,45 +78,41 @@ function DashUsers() {
 
   return (
     <div className="overflow-x-auto p-4 md:mx-auto max-w-screen-lg custom-scrollbar">
-      {currentUser.isAdmin && users.length > 0 ? (
+      {currentUser.isAdmin && comments.length > 0 ? (
         <>
           <table className="min-w-[800px] table-auto border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
             <thead className="bg-gray-300 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-left">
               <tr>
-                <th className="px-4 py-2">Date Created</th>
-                <th className="px-4 py-2">User Image</th>
-                <th className="px-4 py-2">Username</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Admin</th>
+                <th className="px-4 py-2">Date updated</th>
+                <th className="px-4 py-2">Comment content</th>
+                <th className="px-4 py-2">Number of likes</th>
+                <th className="px-4 py-2">PostId</th>
+                <th className="px-4 py-2">UserId</th>
                 <th className="px-4 py-2">Delete</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300 dark:divide-gray-600">
-              {users.map((user) => (
+              {comments.map((comment) => (
                 <tr
-                  key={user._id}
+                  key={comment._id}
                   className="bg-white dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
                 >
-                  <td className="px-4 py-2">{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleDateString()}</td>
                   <td className="px-4 py-2">
-                      <img
-                        src={user.profilePicture || default_image}
-                        alt={user.username}
-                        className="w-14 h-14 object-cover border rounded-full shadow-sm"
-                      />
+                    {comment.content}
                   </td>
                   <td className="px-4 py-2">
-                      {user.username}
+                    {comment.numberOfLikes}
                   </td>
                   <td className="px-4 py-2">
-                      {user.email}
+                    {comment.postId}
                   </td>
-                  <td className="px-4 py-2 capitalize">{user.isAdmin ? (<FaCheck className='text-green-500'/>) : (<FaTimes className="text-red-600"/>)}</td>
+                  <td className="px-4 py-2 capitalize">{comment.userId}</td>
                   <td className="px-4 py-2">
                     <span
                       onClick={() => {
                         setShowModal(true)
-                        setUserIdToDelete(user._id)
+                        setCommentIdToDelete(comment._id)
                       }}
                       className="cursor-pointer text-red-600 hover:underline font-medium">Delete</span>
                   </td>
@@ -135,7 +130,7 @@ function DashUsers() {
         </>
 
       ) : (
-        <p className="text-center text-gray-500 dark:text-gray-300">No users to show</p>
+        <p className="text-center text-gray-500 dark:text-gray-300">No comments to show</p>
       )}
 
       <div className={`${showModal ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-screen bg-transparent backdrop-blur-md`}>
@@ -143,7 +138,7 @@ function DashUsers() {
           <div>
             <HiOutlineExclamationCircle className='text-6xl text-gray-500 mx-auto' />
           </div>
-          <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete this user?</p>
+          <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete this comment?</p>
           <div className='flex justify-between'>
             <button
               onClick={() => setShowModal(false)}
@@ -153,7 +148,7 @@ function DashUsers() {
             </button>
 
             <button
-              onClick={handleDeleteUser}
+              onClick={handleDeleteComment}
               className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
             >
               Yes, I'm sure
@@ -166,4 +161,4 @@ function DashUsers() {
   )
 }
 
-export default DashUsers
+export default DashComments

@@ -9,7 +9,7 @@ import { MdDashboard } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
 import { IoMdSettings } from "react-icons/io";
-import { HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi';
+import { HiAnnotation, HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi';
 function DashboradSidebar() {
 
   const location = useLocation();
@@ -99,6 +99,19 @@ function DashboradSidebar() {
                 className={`${tab === "users" ? "text-sky-500" : ""} flex items-center justify-center gap-9`}>
                 <span className='text-lg'><HiOutlineUserGroup /></span>
                 <span>Users
+                </span>
+              </NavLink>
+            </li>
+          }
+
+          {
+            currentUser.isAdmin &&
+            <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
+              <NavLink
+                to="/dashboard?tab=comments"
+                className={`${tab === "comments" ? "text-sky-500" : ""} flex items-center justify-center gap-9`}>
+                <span className='text-lg'><HiAnnotation /></span>
+                <span>Comments
                 </span>
               </NavLink>
             </li>

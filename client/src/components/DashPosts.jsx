@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom'
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-
+import Spinner from "./Spinner.jsx"
 
 function DashPosts() {
 
@@ -12,15 +12,18 @@ function DashPosts() {
   const [showMore, setShowMore] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [postIdToDelete, setPostIdToDelete] = useState(null)
+  const [loading, setLoading] = useState(true)
   // console.log(userPosts)
 
   useEffect(() => {
     const posts = async () => {
+      setLoading(true)
       try {
         const response = await axios.get(`api/v1/posts/getposts?author=${currentUser._id}`)
         // console.log(response)
         if (response.data.success === true) {
           setUserPosts(response.data.data.posts)
+          setLoading(false)
           if (response.data.data.posts.length < 9) {
             setShowMore(false)
           }
@@ -68,6 +71,11 @@ function DashPosts() {
     }
   }
 
+  if(loading) return (
+    <div className='min-h-screen flex items-center justify-center'>
+      <Spinner />
+    </div>
+  )
   return (
     <div className="overflow-x-auto p-4 md:mx-auto max-w-screen-lg custom-scrollbar">
       {currentUser.isAdmin && userPosts.length > 0 ? (

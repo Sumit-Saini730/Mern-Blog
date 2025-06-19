@@ -1,12 +1,13 @@
 import { Router } from "express";
 import verifyJWT from "../middlewares/auth.middleware.js";
-import { deleteComment, getComments, likeComment, updateComment } from "../controllers/comment.controller.js";
+import { deleteComment, getAllComments, getComments, likeComment, updateComment } from "../controllers/comment.controller.js";
 import { createComment } from "../controllers/comment.controller.js";
 
 
 const router = Router();
 
 router.route("/getcomments/:postId").get(getComments);
+router.route("/getallcomments").get(verifyJWT, getAllComments);
 router.route("/create").post(verifyJWT,createComment);
 router.route("/updatecomment/:commentId").patch(verifyJWT, updateComment);
 router.route("/deletecomment/:commentId").delete(verifyJWT, deleteComment);
