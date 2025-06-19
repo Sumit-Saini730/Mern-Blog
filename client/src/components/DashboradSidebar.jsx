@@ -48,8 +48,8 @@ function DashboradSidebar() {
     <div className={`sm:h-full sm:w-56 w-full bg-gray-50 shadow-lg border-r-2 border-t-2 rounded-lg dark:bg-[#12171e] p-3 transition-all ease-in-out duration-300 text-black dark:text-white`}>
       <hr className='mt-14 sm:hidden' />
       <div className={`mt-2`}>
-        <h2 className={`font-bold text-center bg-gray-200 dark:bg-gray-700 rounded-lg`}>{currentUser.isAdmin ? "Admin" : "User"}</h2>
-        <p className='font-bold text-center whitespace-nowrap'>{currentUser.fullName}</p>
+        <h2 className={`font-bold text-center dark:text-white bg-gray-200 dark:bg-gray-700 rounded-lg`}>{currentUser.isAdmin ? "Admin" : "User"}</h2>
+        <p className='font-bold dark:text-white text-center whitespace-nowrap'>{currentUser.fullName}</p>
       </div>
 
       <div className='mt-2'>
@@ -60,15 +60,18 @@ function DashboradSidebar() {
         </div>
         <ul className={`flex flex-col gap-y-3 p-1 ${!open && "sm:flex hidden"}`}>
 
-          {/* <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
-            <NavLink
-            to="/dashboard"
-            className={({isActive}) => `${isActive ? "text-sky-500" : ""} flex items-center justify-center gap-9`}>
-              <span className='text-lg'><MdDashboard /></span>
-              <span className={`${!open && "hidden whitespace-nowrap"}`}>Dashboard</span>
-            </NavLink>
-          </li> */}
-
+          {
+            currentUser.isAdmin &&
+            <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
+              <NavLink
+                to="/dashboard?tab=dash"
+                className={`${tab === "dash" ? "text-sky-500" : ""} flex items-center justify-center gap-9`}>
+                <span className='text-lg'><MdDashboard /></span>
+                <span>Dashboard
+                </span>
+              </NavLink>
+            </li>
+          }
 
           <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
             <NavLink
