@@ -18,7 +18,7 @@ function UpdatePost() {
     // console.log(postId)
     useEffect(() =>{
         const fetchPost = async () => {
-            console.log("fetching post")
+            // console.log("fetching post")
             const response = await axios.get(`/api/v1/posts/getposts?postId=${postId}`)
             // console.log(response)
             if(response.data.success === false){
@@ -51,7 +51,7 @@ function UpdatePost() {
     }
 
     const Submit = async (data) => {
-        console.log(data)
+        // console.log(data)
         const formData = new FormData();
         formData.append("title", data.title);
         formData.append("category", data.category);
@@ -61,7 +61,7 @@ function UpdatePost() {
         }
         try {
             const response = await axios.patch(`/api/v1/posts/update/${postIdToUpdate}/${currentUser._id}`, formData);
-            console.log(response)
+            // console.log(response)
             if (response.data.success === false) {
                 setPublishError(response.data.message)
                 return

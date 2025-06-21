@@ -61,8 +61,8 @@ function DashboardProfile() {
       }
 
       const response = await axios.patch(`api/v1/users/update/${currentUser._id}`, formData);
-      console.log(response)
-      console.log(response.data.success)
+      // console.log(response)
+      // console.log(response.data.success)
 
       if (response.data.success === true) {
         dispatch(updateSuccess(response.data.data.user));

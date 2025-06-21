@@ -42,7 +42,7 @@ function DashPosts() {
 
     try {
       const response = await axios.get(`api/v1/posts/getposts?author=${currentUser._id}&startIndex=${startIndex}`)
-      console.log(response)
+      // console.log(response)
 
       if (response.data.success === true) {
         setUserPosts(prev => [...prev, ...response.data.data.posts]);

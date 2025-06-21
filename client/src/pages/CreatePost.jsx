@@ -32,7 +32,7 @@ function CreatePost() {
     formData.append("postImage", data.postImage[0]);
     try {
       const response = await axios.post("api/v1/posts/create", formData);
-      console.log(response)
+      // console.log(response)
       if (response.data.success === false) {
         setPublishError(response.data.message)
         return

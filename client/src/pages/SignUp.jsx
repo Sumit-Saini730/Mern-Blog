@@ -21,12 +21,8 @@ function SignUp() {
     // console.log(data)
     try {
       setError(null)
-
       const response = await axios.post("api/v1/auth/signup", data);
-      // console.log(response)
-      // console.log(response.data.success)
       if (response.data.success === true) {
-        // console.log("inside success")
         navigate("/signin")
       }
 

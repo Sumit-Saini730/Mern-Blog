@@ -41,7 +41,7 @@ function DashComments() {
 
     try {
       const response = await axios.get(`api/v1/comments/getallcomments?startIndex=${startIndex}`)
-      console.log(response)
+      // console.log(response)
 
       if (response.data.success === true) {
         setUsers(prev => [...prev, ...response.data.data.users]);

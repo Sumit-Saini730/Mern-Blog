@@ -42,7 +42,7 @@ function ProfileDropdown() {
       const response = await axios.post("api/v1/auth/signout");
       if (response.data.success === true) {
         dispatch(signoutSuccess());
-        console.log(response.data.message);
+        // console.log(response.data.message);
       }
     } catch (error) {
       console.log(error);

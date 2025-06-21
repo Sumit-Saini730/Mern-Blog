@@ -42,7 +42,7 @@ function DashUsers() {
 
     try {
       const response = await axios.get(`api/v1/posts/getusers?startIndex=${startIndex}`)
-      console.log(response)
+      // console.log(response)
 
       if (response.data.success === true) {
         setUsers(prev => [...prev, ...response.data.data.users]);
