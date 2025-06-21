@@ -18,7 +18,7 @@ function DashComments() {
     const comments = async () => {
       setLoading(true)
       try {
-        const response = await api.get(`/api/v1/comments/getallcomments`)
+        const response = await api.get(`api/v1/comments/getallcomments`)
         // console.log(response)
         if (response.data.success === true) {
           setComments(response.data.data.comments)
