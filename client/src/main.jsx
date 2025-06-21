@@ -20,6 +20,7 @@ import { PersistGate } from "redux-persist/integration/react"
 import PrivateRoute from './components/PrivateRoute.jsx'
 import OnlyAdminPrivateRoute from "./components/OnlyAdminPrivateRoute.jsx"
 import PostPage from './components/PostPage.jsx'
+import Search from './components/Search.jsx'
 
 
 
@@ -31,6 +32,7 @@ const router = createBrowserRouter(
       <Route path='about' element={<About />} />
       <Route path='signin' element={<SignIn />} />
       <Route path='signup' element={<SignUp />} />
+      <Route path='/search' element={<Search />} />
       <Route element={<PrivateRoute />}>
         <Route path='dashboard' element={<Dashboard />} />
       </Route>

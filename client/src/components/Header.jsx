@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaTimes } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
@@ -8,15 +7,39 @@ import { IoMenu } from "react-icons/io5";
 import { useSelector, useDispatch } from "react-redux"
 import { toggleTheme } from "../features/theme/themeSlice"
 import ProfileDropdown from './ProfileDropdown';
+import { useForm } from 'react-hook-form';
 function Header() {
 
   const { currentUser } = useSelector((state) => state.user)
   const { mode } = useSelector((state) => state.theme)
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
+
+  // console.log(searchTerm)
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("searchTerm");
+
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search])
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  const submit = (data) => {
+    const urlParams = new URLSearchParams(location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  }
   return (
     <header className='flex flex-col sticky gap-y-3 top-0 z-50 bg-white dark:bg-slate-800'>
       <div className='flex justify-between items-center border-b-2 p-4'>
@@ -27,15 +50,23 @@ function Header() {
           </Link>
         </div>
 
-        <form className='relative'>
+        <form onSubmit={handleSubmit(submit)} className='relative'>
           <input
             type="text"
             placeholder='Search...'
+            value={searchTerm}
+            {...register("searchTerm",
+              {
+                onChange: (e) => setSearchTerm(e.target.value)
+              }
+            )}
             className='border-2 text-black dark:bg-sky-50 outline-sky-500 border-gray-400 p-2 rounded-3xl pr-12 pl-4 hidden lg:inline'
           />
 
           <span>
-            <AiOutlineSearch className='text-2xl absolute right-4 top-[10px] cursor-pointer hidden lg:inline' />
+            <button type='submit'>
+              <AiOutlineSearch className='text-2xl absolute right-4 top-[10px] cursor-pointer hidden lg:inline hover:text-sky-500' />
+            </button>
           </span>
 
           <button className='w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-400 rounded-full items-center flex justify-center lg:hidden'>
@@ -85,7 +116,7 @@ function Header() {
             </li>
 
             {currentUser ? (
-                <ProfileDropdown />
+              <ProfileDropdown />
             ) :
               (
                 <Link to="/signup">
