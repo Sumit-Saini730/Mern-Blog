@@ -123,7 +123,7 @@ function DashboradSidebar() {
           <li className={`flex relative items-center h-8 rounded-lg hover:bg-gray-200 dark:hover:bg-sky-300 p-3 duration-200`}>
             <span className={`flex items-center justify-center gap-9`}>
               <span className='text-lg'><LuLogOut /></span>
-              <span onClick={handleSignout}>Logout</span>
+              <span className='cursor-pointer' onClick={handleSignout}>Logout</span>
             </span>
           </li>
         </ul>
