@@ -7,7 +7,7 @@ import default_image from "../assets/default_image.jpg";
 import { useForm } from "react-hook-form";
 import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../features/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import api from '../api/api.js';
 import {Link} from "react-router-dom";
 
 
@@ -60,7 +60,7 @@ function DashboardProfile() {
         formData.append("profilePicture", data.profilePicture[0]);
       }
 
-      const response = await axios.patch(`api/v1/users/update/${currentUser._id}`, formData);
+      const response = await api.patch(`api/v1/users/update/${currentUser._id}`, formData);
       // console.log(response)
       // console.log(response.data.success)
 
@@ -100,7 +100,7 @@ function DashboardProfile() {
     setIsSure(false)
     try {
       dispatch(deleteUserStart())
-      const response = await axios.delete(`api/v1/users/delete/${currentUser._id}`)
+      const response = await api.delete(`api/v1/users/delete/${currentUser._id}`)
       if(response.data.success === true){
         dispatch(deleteUserSuccess(response.data.message))
       }

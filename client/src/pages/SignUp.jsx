@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axios from "axios"
+import api from '../api/api.js'
 import { Link, useNavigate } from 'react-router-dom'
 import Input from '../components/Input'
 import { useForm } from "react-hook-form"
@@ -21,7 +21,7 @@ function SignUp() {
     // console.log(data)
     try {
       setError(null)
-      const response = await axios.post("api/v1/auth/signup", data);
+      const response = await api.post("api/v1/auth/signup", data);
       if (response.data.success === true) {
         navigate("/signin")
       }

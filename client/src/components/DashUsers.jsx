@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../api/api.js'
 import { useSelector } from "react-redux"
 import { FaCheck, FaTimes} from "react-icons/fa";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -19,7 +19,7 @@ function DashUsers() {
     const users = async () => {
       setLoading(true)
       try {
-        const response = await axios.get(`/api/v1/users/getusers`)
+        const response = await api.get(`/api/v1/users/getusers`)
         // console.log(response)
         if (response.data.success === true) {
           setUsers(response.data.data.users)
@@ -41,7 +41,7 @@ function DashUsers() {
     const startIndex = users.length;
 
     try {
-      const response = await axios.get(`api/v1/posts/getusers?startIndex=${startIndex}`)
+      const response = await api.get(`api/v1/posts/getusers?startIndex=${startIndex}`)
       // console.log(response)
 
       if (response.data.success === true) {
@@ -58,7 +58,7 @@ function DashUsers() {
   const handleDeleteUser = async () => {
     setShowModal(false)
     try {
-      const response = await axios.delete(`api/v1/users/delete/${userIdToDelete}`)
+      const response = await api.delete(`api/v1/users/delete/${userIdToDelete}`)
       // console.log(response)
       if(response.data.success === false){
         alert(response.data.message)

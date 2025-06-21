@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import axios from 'axios'
+import api from '../api/api.js'
 import { signoutSuccess } from '../features/user/userSlice'
 import { Link } from 'react-router-dom'
 import { LuLogOut } from "react-icons/lu";
@@ -39,7 +39,7 @@ function ProfileDropdown() {
 
   const handleSignout = async () => {
     try {
-      const response = await axios.post("api/v1/auth/signout");
+      const response = await api.post("api/v1/auth/signout");
       if (response.data.success === true) {
         dispatch(signoutSuccess());
         // console.log(response.data.message);

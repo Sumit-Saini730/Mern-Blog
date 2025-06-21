@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../api/api.js'
 import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom'
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -19,7 +19,7 @@ function DashPosts() {
     const posts = async () => {
       setLoading(true)
       try {
-        const response = await axios.get(`api/v1/posts/getposts?author=${currentUser._id}`)
+        const response = await api.get(`api/v1/posts/getposts?author=${currentUser._id}`)
         // console.log(response)
         if (response.data.success === true) {
           setUserPosts(response.data.data.posts)
@@ -41,7 +41,7 @@ function DashPosts() {
     const startIndex = userPosts.length;
 
     try {
-      const response = await axios.get(`api/v1/posts/getposts?author=${currentUser._id}&startIndex=${startIndex}`)
+      const response = await api.get(`api/v1/posts/getposts?author=${currentUser._id}&startIndex=${startIndex}`)
       // console.log(response)
 
       if (response.data.success === true) {
@@ -58,7 +58,7 @@ function DashPosts() {
   const handleDeletePost = async () => {
     setShowModal(false)
     try {
-      const response = await axios.delete(`api/v1/posts/delete/${postIdToDelete}/${currentUser._id}`)
+      const response = await api.delete(`api/v1/posts/delete/${postIdToDelete}/${currentUser._id}`)
       // console.log(response)
       if(response.data.success === false){
         alert(response.data.message)

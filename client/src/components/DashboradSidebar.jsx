@@ -3,12 +3,11 @@ import { IoMenu } from "react-icons/io5";
 import { FaTimes } from "react-icons/fa";
 import { useSelector, useDispatch } from 'react-redux'
 import { signoutSuccess } from '../features/user/userSlice'
-import axios from 'axios';
+import api from '../api/api.js'
 import { NavLink, useLocation } from 'react-router-dom'
 import { MdDashboard } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { LuLogOut } from "react-icons/lu";
-import { IoMdSettings } from "react-icons/io";
 import { HiAnnotation, HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi';
 function DashboradSidebar() {
 
@@ -35,7 +34,7 @@ function DashboradSidebar() {
 
   const handleSignout = async () => {
     try {
-      const response = await axios.post("api/v1/auth/signout");
+      const response = await api.post("/api/v1/auth/signout");
       if (response.data.success === true) {
         dispatch(signoutSuccess());
         // console.log(response.data.message);

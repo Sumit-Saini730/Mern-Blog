@@ -3,7 +3,7 @@ import Input from "../components/Input.jsx"
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useForm, Controller } from 'react-hook-form';
-import axios from "axios";
+import api from "../api/api.js";
 import { useNavigate } from 'react-router-dom';
 
 function CreatePost() {
@@ -31,7 +31,7 @@ function CreatePost() {
     formData.append("content", data.content);
     formData.append("postImage", data.postImage[0]);
     try {
-      const response = await axios.post("api/v1/posts/create", formData);
+      const response = await api.post("api/v1/posts/create", formData);
       // console.log(response)
       if (response.data.success === false) {
         setPublishError(response.data.message)

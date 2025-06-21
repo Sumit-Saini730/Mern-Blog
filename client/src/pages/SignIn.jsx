@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import axios from "axios"
+import api from '../api/api.js'
 import { Link, useNavigate } from 'react-router-dom'
 import Input from '../components/Input'
 import { useForm } from "react-hook-form"
@@ -25,7 +25,7 @@ function SignIn() {
     try {
       dispatch(loginStart())
 
-      const response = await axios.post("api/v1/auth/signin", data);
+      const response = await api.post("api/v1/auth/signin", data);
       // console.log(response)
       if(response.data.success === false) {
         dispatch(loginFailure(response.data.message))

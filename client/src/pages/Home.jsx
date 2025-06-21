@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import CallToAction from '../components/CallToAction.jsx'
-import axios from 'axios'
+import api from '../api/api.js'
 import PostCard from '../components/PostCard.jsx'
 
 function Home() {
@@ -11,7 +11,7 @@ function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const reponse = await axios.get("/api/v1/posts/getposts?limit=6")
+        const reponse = await api.get("/api/v1/posts/getposts?limit=6")
         if (reponse.data.success === true) {
           setPosts(reponse.data.data.posts)
         }

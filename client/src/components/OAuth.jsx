@@ -2,7 +2,7 @@ import React from 'react'
 import googleLogo from "../assets/google.png"
 import { app } from '../firebase'
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth"
-import axios from 'axios'
+import api from '../api/api.js'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginFailure, loginStart, loginSuccess } from '../features/user/userSlice'
@@ -20,7 +20,7 @@ function OAuth() {
         try {
             const googleResponse = await signInWithPopup(auth, provider);
             // console.log(googleResponse);
-            const response = await axios.post("/api/v1/auth/google", {
+            const response = await api.post("/api/v1/auth/google", {
                 name: googleResponse.user.displayName,
                 email: googleResponse.user.email,
                 googlePhotoUrl: googleResponse.user.photoURL

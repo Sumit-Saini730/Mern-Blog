@@ -3,7 +3,7 @@ import Input from "../components/Input.jsx"
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useForm, Controller } from 'react-hook-form';
-import axios from "axios";
+import api from "../api/api.js";
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,7 @@ function UpdatePost() {
     useEffect(() =>{
         const fetchPost = async () => {
             // console.log("fetching post")
-            const response = await axios.get(`/api/v1/posts/getposts?postId=${postId}`)
+            const response = await api.get(`/api/v1/posts/getposts?postId=${postId}`)
             // console.log(response)
             if(response.data.success === false){
                 alert(response.data.message)
@@ -60,7 +60,7 @@ function UpdatePost() {
             formData.append("postImage", data.postImage[0]);
         }
         try {
-            const response = await axios.patch(`/api/v1/posts/update/${postIdToUpdate}/${currentUser._id}`, formData);
+            const response = await api.patch(`/api/v1/posts/update/${postIdToUpdate}/${currentUser._id}`, formData);
             // console.log(response)
             if (response.data.success === false) {
                 setPublishError(response.data.message)

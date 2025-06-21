@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import axios from 'axios'
+import api from '../api/api.js'
 import { useEffect } from 'react'
 import Comment from './Comment'
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -26,7 +26,7 @@ function CommentSection({ postId }) {
         // console.log(data)
         if (comment.length > 200 || comment.length < 1) return
         try {
-            const response = await axios.post(`/api/v1/comments/create`, { content: comment, postId: postId, userId: currentUser._id })
+            const response = await api.post(`/api/v1/comments/create`, { content: comment, postId: postId, userId: currentUser._id })
 
             if (response.data.success === false) {
                 alert(response.data.message)
@@ -45,7 +45,7 @@ function CommentSection({ postId }) {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`/api/v1/comments/getcomments/${postId}`)
+                const response = await api.get(`/api/v1/comments/getcomments/${postId}`)
 
                 if (response.data.success === true) {
                     setComments(response.data.data.comments)
@@ -63,7 +63,7 @@ function CommentSection({ postId }) {
             return
         }
         try {
-            const response = await axios.put(`/api/v1/comments/likecomment/${commentId}`)
+            const response = await api.put(`/api/v1/comments/likecomment/${commentId}`)
             // console.log(response)
 
             if (response.data.success === true) {
@@ -91,7 +91,7 @@ function CommentSection({ postId }) {
                 alert("You must be signed in to delete a comment")
                 return
             }
-            const response = await axios.delete(`/api/v1/comments/deletecomment/${commentId}`)
+            const response = await api.delete(`/api/v1/comments/deletecomment/${commentId}`)
             if (response.data.success === false) {
                 alert(response.data.message)
             }

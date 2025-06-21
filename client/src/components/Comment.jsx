@@ -1,4 +1,4 @@
-import axios from 'axios'
+import api from '../api/api.js'
 import { useState, useEffect } from 'react'
 import moment from "moment"
 import { FaThumbsUp } from "react-icons/fa"
@@ -14,7 +14,7 @@ function Comment({ comment, onLike, onUpdate, onDelete }) {
     useEffect(() => {
         const getUser = async () => {
             try {
-                const response = await axios.get(`/api/v1/users/${comment.userId}`)
+                const response = await api.get(`/api/v1/users/${comment.userId}`)
                 if (response.data.success === true) {
                     setUser(response.data.data.user)
                 }
@@ -32,7 +32,7 @@ function Comment({ comment, onLike, onUpdate, onDelete }) {
 
     const handleSave = async () => {
         try {
-            const response = await axios.patch(`/api/v1/comments/updatecomment/${comment._id}`, { content: updatedComment })
+            const response = await api.patch(`/api/v1/comments/updatecomment/${comment._id}`, { content: updatedComment })
 
             if (response.data.success === true) {
                 setIsEditing(false)

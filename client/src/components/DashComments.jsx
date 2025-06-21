@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import api from '../api/api.js'
 import { useSelector } from "react-redux"
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import default_image from "../assets/default_image.jpg"
@@ -18,7 +18,7 @@ function DashComments() {
     const comments = async () => {
       setLoading(true)
       try {
-        const response = await axios.get(`/api/v1/comments/getallcomments`)
+        const response = await api.get(`/api/v1/comments/getallcomments`)
         // console.log(response)
         if (response.data.success === true) {
           setComments(response.data.data.comments)
@@ -40,7 +40,7 @@ function DashComments() {
     const startIndex = comments.length;
 
     try {
-      const response = await axios.get(`api/v1/comments/getallcomments?startIndex=${startIndex}`)
+      const response = await api.get(`api/v1/comments/getallcomments?startIndex=${startIndex}`)
       // console.log(response)
 
       if (response.data.success === true) {
@@ -57,7 +57,7 @@ function DashComments() {
   const handleDeleteComment = async () => {
     setShowModal(false)
     try {
-      const response = await axios.delete(`api/v1/comments/deletecomment/${commentIdToDelete}`)
+      const response = await api.delete(`api/v1/comments/deletecomment/${commentIdToDelete}`)
       // console.log(response)
       if (response.data.success === false) {
         alert(response.data.message)

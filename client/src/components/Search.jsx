@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/api.js';
 import PostCard from './PostCard';
 import Spinner from './Spinner';
 
@@ -36,7 +36,7 @@ function Search() {
             setLoading(true);
             try {
                 const searchQuery = urlParams.toString();
-                const response = await axios.get(`/api/v1/posts/getposts?${searchQuery}`);
+                const response = await api.get(`/api/v1/posts/getposts?${searchQuery}`);
                 if (response.data.success === true) {
                     setPosts(response.data.data.posts);
                     setLoading(false);
@@ -95,7 +95,7 @@ function Search() {
         urlParams.set("startIndex", startIndex);
         const searchQuery = urlParams.toString();
         try {
-            const response = await axios.get(`/api/v1/posts/getposts?${searchQuery}`);
+            const response = await api.get(`/api/v1/posts/getposts?${searchQuery}`);
             if (response.data.success === true) {
                 setPosts((prev) => [...prev, ...response.data.data.posts]);
                 if (response.data.data.posts.length === 9) {

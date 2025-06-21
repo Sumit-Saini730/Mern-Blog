@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import axios from 'axios'
+import api from '../api/api.js'
 import Spinner from "./Spinner.jsx"
 import { HiAnnotation, HiArrowNarrowUp, HiDocumentText, HiOutlineUserGroup } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
@@ -21,7 +21,7 @@ function DashBoardComp() {
     useEffect(() => {
         const users = async () => {
             try {
-                const res = await axios.get("/api/v1/users/getusers?limit=5")
+                const res = await api.get("/api/v1/users/getusers?limit=5")
                 if (res.data.success === true) {
                     setUsers(res.data.data.users)
                     setTotalUsers(res.data.data.totalUsers)
@@ -33,7 +33,7 @@ function DashBoardComp() {
         }
         const posts = async () => {
             try {
-                const res = await axios.get("/api/v1/posts/getposts?limit=5")
+                const res = await api.get("/api/v1/posts/getposts?limit=5")
                 if (res.data.success === true) {
                     setPosts(res.data.data.posts)
                     setTotalPosts(res.data.data.totalPosts)
@@ -45,7 +45,7 @@ function DashBoardComp() {
         }
         const comments = async () => {
             try {
-                const res = await axios.get("/api/v1/comments/getallcomments?limit=5")
+                const res = await api.get("/api/v1/comments/getallcomments?limit=5")
                 if (res.data.success === true) {
                     setComments(res.data.data.comments)
                     setTotalComments(res.data.data.totalComments)

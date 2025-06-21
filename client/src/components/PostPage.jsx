@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Spinner from "./Spinner.jsx"
 import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import axios from 'axios'
+import api from '../api/api.js'
 import CallToAction from './CallToAction.jsx'
 import CommentSection from './CommentSection.jsx'
 import PostCard from './PostCard.jsx'
@@ -18,7 +18,7 @@ function PostPage() {
     const fetchPost = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/api/v1/posts/getposts?slug=${postSlug}`)
+        const response = await api.get(`/api/v1/posts/getposts?slug=${postSlug}`)
 
         if (response.data.success === false) {
           setError(response.data.message)
@@ -43,7 +43,7 @@ function PostPage() {
   useEffect(() => {
     const fetchRecentPosts = async () => {
       try {
-        const response = await axios.get(`/api/v1/posts/getposts?limit=3`)
+        const response = await api.get(`/api/v1/posts/getposts?limit=3`)
         if (response.data.success === true) {
           setRecentPosts(response.data.data.posts)
         }
