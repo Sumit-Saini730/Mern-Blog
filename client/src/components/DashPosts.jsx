@@ -20,7 +20,7 @@ function DashPosts() {
       setLoading(true)
       try {
         const response = await api.get(`api/v1/posts/getposts?author=${currentUser._id}`)
-        console.log(response)
+        // console.log(response)
         if (response.data.success === true) {
           setUserPosts(response.data.data.posts)
           setLoading(false)
