@@ -156,7 +156,12 @@ function CommentSection({ postId }) {
 
                             {
                                 comments.map((comment) => (
-                                    <Comment key={comment._id} comment={comment} onLike={handleLikes} onUpdate={handleCommentUpdate} onDelete={(commentId) => {
+                                    <Comment 
+                                    key={comment._id} 
+                                    comment={comment} 
+                                    onLike={handleLikes} 
+                                    onUpdate={handleCommentUpdate} 
+                                    onDelete={(commentId) => {
                                         setIsSure(true)
                                         setCommentToDelete(commentId)
                                     }
