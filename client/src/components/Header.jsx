@@ -235,12 +235,10 @@ function Header() {
       <aside
         id="mobile-navigation"
         aria-label="Mobile navigation"
-        className={`fixed right-0 top-0 z-50 flex h-dvh w-4/5 max-w-sm flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
         aria-hidden={!isOpen}
         inert={!isOpen}
+        className={`fixed right-0 top-0 z-[60] flex h-dvh w-[min(20rem,85vw)] flex-col bg-white shadow-2xl dark:bg-slate-900 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"}`}
       >
-
         <div className="flex items-center justify-between border-b border-slate-200 p-5 dark:border-slate-800">
           <span className="text-lg font-bold text-slate-900 dark:text-white">
             Navigation
@@ -250,34 +248,20 @@ function Header() {
             type="button"
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
           >
             <FaTimes />
           </button>
         </div>
 
         <nav className="flex-1 space-y-2 p-4">
-          <NavLink to="/" end className={mobileNavLinkClass}>
-            Home
-          </NavLink>
-
-          <NavLink to="/about" className={mobileNavLinkClass}>
-            About
-          </NavLink>
-
-          <NavLink to="/projects" className={mobileNavLinkClass}>
-            Projects
-          </NavLink>
-
-          <NavLink to="/contact" className={mobileNavLinkClass}>
-            Contact us
-          </NavLink>
+          <NavLink to="/" end className={mobileNavLinkClass}>Home</NavLink>
+          <NavLink to="/about" className={mobileNavLinkClass}>About</NavLink>
+          <NavLink to="/projects" className={mobileNavLinkClass}>Projects</NavLink>
+          <NavLink to="/contact" className={mobileNavLinkClass}>Contact us</NavLink>
 
           {currentUser ? (
-            <NavLink
-              to="/dashboard?tab=profile"
-              className={mobileNavLinkClass}
-            >
+            <NavLink to="/dashboard?tab=profile" className={mobileNavLinkClass}>
               My Profile
             </NavLink>
           ) : (
@@ -292,7 +276,6 @@ function Header() {
             Explore, learn and build something meaningful.
           </p>
         </div>
-
       </aside>
     </header>
   )
