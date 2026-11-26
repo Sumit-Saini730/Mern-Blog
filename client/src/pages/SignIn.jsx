@@ -75,7 +75,7 @@ function SignIn() {
             INSPIRE
           </span>
 
-          <span className="text-slate-900 dark:text-white">
+          <span className="dark:text-white">
             Hub<span className="text-blue-600 dark:text-blue-400">.</span>
           </span>
         </Link>
