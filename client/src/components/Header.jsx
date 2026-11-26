@@ -1,211 +1,299 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon, FaTimes } from "react-icons/fa";
-import { MdSunny } from "react-icons/md";
-import { IoMenu } from "react-icons/io5";
-import { useSelector, useDispatch } from "react-redux"
-import { toggleTheme } from "../features/theme/themeSlice"
-import ProfileDropdown from './ProfileDropdown';
-import { useForm } from 'react-hook-form';
+import { AiOutlineSearch } from 'react-icons/ai'
+import { FaMoon, FaTimes } from 'react-icons/fa'
+import { MdSunny } from 'react-icons/md'
+import { IoMenu } from 'react-icons/io5'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleTheme } from '../features/theme/themeSlice'
+import ProfileDropdown from './ProfileDropdown'
 
 function Header() {
   const { currentUser } = useSelector((state) => state.user)
   const { mode } = useSelector((state) => state.theme)
-  const dispatch = useDispatch()
-  const [isOpen, setIsOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
 
+  const dispatch = useDispatch()
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Sync search input with URL
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const searchTermFromUrl = urlParams.get("searchTerm");
-    if (searchTermFromUrl) {
-      setSearchTerm(searchTermFromUrl);
-    }
+    const urlParams = new URLSearchParams(location.search)
+    setSearchTerm(urlParams.get('searchTerm') || '')
   }, [location.search])
 
-  // Lock body scroll while the mobile drawer is open, and allow Escape to close it
+  // Close mobile menu when route changes
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+    setIsOpen(false)
+    setMobileSearchOpen(false)
+  }, [location.pathname])
+
+  // Handle body scroll and Escape key
+  useEffect(() => {
+    if (!isOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
     }
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') setIsOpen(false);
-    };
-    document.addEventListener('keydown', onKeyDown);
+
+    document.addEventListener('keydown', handleKeyDown)
+
     return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [isOpen]);
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
 
-  // Close the drawer automatically on route change
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
+  const submitSearch = (event) => {
+    event.preventDefault()
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
+    const urlParams = new URLSearchParams(location.search)
 
-  const submit = (data) => {
-    const urlParams = new URLSearchParams(location.search);
-    urlParams.set("searchTerm", searchTerm);
-    const searchQuery = urlParams.toString();
-    navigate(`/search?${searchQuery}`);
-    setMobileSearchOpen(false);
+    if (searchTerm.trim()) {
+      urlParams.set('searchTerm', searchTerm.trim())
+    } else {
+      urlParams.delete('searchTerm')
+    }
+
+    const query = urlParams.toString()
+    navigate(query ? `/search?${query}` : '/search')
+
+    setMobileSearchOpen(false)
+    setIsOpen(false)
   }
 
   const navLinkClass = ({ isActive }) =>
-    `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-600 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-400' : ''}`;
+    `relative py-2 text-sm font-semibold transition-colors duration-200 ${isActive
+      ? 'text-blue-600 dark:text-blue-400'
+      : 'text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400'
+    }`
 
   const mobileNavLinkClass = ({ isActive }) =>
-    `duration-200 hover:text-sky-500 ${isActive ? 'text-sky-700 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-400' : ''}`;
+    `block w-full rounded-lg px-4 py-3 text-sm font-semibold transition-colors duration-200 ${isActive
+      ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400'
+      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700'
+    }`
 
   return (
-    <header className='sticky top-0 z-50 bg-white dark:bg-slate-800 border-b-2 dark:border-slate-700'>
-      <div className='flex justify-between items-center gap-2 p-3 sm:p-4'>
-        {/* Logo */}
-        <div className="flex-shrink-0 text-md sm:text-2xl font-bold whitespace-nowrap">
-          <Link to="/">
-            <span className='px-3 py-1.5 sm:px-4 sm:py-2 text-white bg-gradient-to-r from-[#ff234b] to-cyan-400 rounded-lg'>INSPIRE</span>
-            Hub
-          </Link>
-        </div>
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95">
 
-        {/* Search - visible inline from md up */}
-        <form onSubmit={handleSubmit(submit)} className='relative hidden md:block flex-1 max-w-md mx-2'>
+      {/* Main Navbar */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+
+        {/* Logo */}
+        <Link
+          to="/"
+          className="flex flex-shrink-0 items-center gap-1.5 text-xl font-bold tracking-tight sm:text-2xl"
+          aria-label="Inspire Hub home"
+        >
+          <span className="rounded-lg bg-blue-600 px-3 py-1.5 text-white">
+            INSPIRE
+          </span>
+
+          <span className="text-slate-900 dark:text-white">
+            Hub<span className="text-blue-600 dark:text-blue-400">.</span>
+          </span>
+        </Link>
+
+        {/* Desktop Search */}
+        <form
+          onSubmit={submitSearch}
+          className="relative hidden max-w-md flex-1 md:block"
+        >
           <input
-            type="text"
-            placeholder='Search...'
+            type="search"
+            placeholder="Search articles..."
             value={searchTerm}
-            {...register("searchTerm", {
-              onChange: (e) => setSearchTerm(e.target.value)
-            })}
-            className='w-full border-2 text-black dark:bg-sky-50 outline-sky-500 border-gray-400 p-2 rounded-3xl pr-12 pl-4'
+            onChange={(event) => setSearchTerm(event.target.value)}
+            className="w-full rounded-full border border-slate-300 bg-slate-50 py-2.5 pl-5 pr-12 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           />
-          <button type='submit' aria-label="Search">
-            <AiOutlineSearch className='text-2xl absolute right-4 top-[10px] cursor-pointer hover:text-sky-500' />
+
+          <button
+            type="submit"
+            aria-label="Search articles"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-slate-500 transition-colors hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+          >
+            <AiOutlineSearch />
           </button>
         </form>
 
-        {/* Right side controls */}
-        <div className='flex items-center gap-2 sm:gap-4'>
-          {/* Search icon toggle - only below md, where the inline input is hidden */}
+        {/* Right Controls */}
+        <div className="flex flex-shrink-0 items-center gap-2 sm:gap-4">
+
+          {/* Mobile Search Toggle */}
           <button
-            type='button'
+            type="button"
             onClick={() => setMobileSearchOpen((prev) => !prev)}
             aria-label="Toggle search"
             aria-expanded={mobileSearchOpen}
-            className='w-8 h-8 sm:w-10 sm:h-10 border-2 border-gray-400 rounded-full items-center flex justify-center md:hidden'
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-lg text-slate-600 transition-colors hover:border-blue-500 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:text-blue-400 md:hidden"
           >
-            <AiOutlineSearch className='text-xl hover:text-sky-500' />
+            <AiOutlineSearch />
           </button>
 
+          {/* Theme Toggle */}
           <button
+            type="button"
             onClick={() => dispatch(toggleTheme())}
             aria-label="Toggle dark mode"
-            className='w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-400 flex justify-center cursor-pointer items-center focus:ring-2 focus:ring-sky-300 sm:text-xl text-lg hover:text-sky-500'
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-lg text-slate-600 transition-all hover:border-blue-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-slate-700 dark:text-slate-300 dark:hover:text-blue-400"
           >
-            {mode === "dark" ? <MdSunny /> : <FaMoon />}
+            {mode === 'dark' ? <MdSunny /> : <FaMoon />}
           </button>
 
-          <nav className='hidden sm:flex items-center justify-center'>
-            <ul className='flex font-bold text-base items-center justify-center gap-5'>
-              <li>
-                <NavLink to="/" className={navLinkClass}>Home</NavLink>
-              </li>
-              <li>
-                <NavLink to="/about" className={navLinkClass}>About</NavLink>
-              </li>
-              <li>
-                <NavLink to="/projects" className={navLinkClass}>Projects</NavLink>
-              </li>
-              <li>
-                {currentUser ? (
-                  <ProfileDropdown />
-                ) : (
-                  <Link to="/signup">
-                    <button className='px-4 py-1 sm:px-7 sm:py-2 border-2 bg-sky-400 rounded-lg items-center flex justify-center hover:bg-sky-500 active:bg-sky-600 focus:ring-2 focus:ring-sky-300 font-medium duration-200 text-white whitespace-nowrap'>
-                      Sign Up
-                    </button>
-                  </Link>
-                )}
-              </li>
-            </ul>
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-6 md:flex">
+            <NavLink to="/" end className={navLinkClass}>
+              Home
+            </NavLink>
+
+            <NavLink to="/about" className={navLinkClass}>
+              About
+            </NavLink>
+
+            <NavLink to="/projects" className={navLinkClass}>
+              Projects
+            </NavLink>
+
+            <NavLink to="/contact" className={navLinkClass}>
+              Contact us
+            </NavLink>
+
+            {currentUser ? (
+              <ProfileDropdown />
+            ) : (
+              <Link
+                to="/signup"
+                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-blue-700"
+              >
+                Sign Up
+              </Link>
+            )}
           </nav>
 
+          {/* Mobile Menu Toggle */}
           <button
-            onClick={toggleMenu}
-            aria-label="Open menu"
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isOpen}
-            className='sm:hidden p-1 rounded border-2 flex justify-center cursor-pointer items-center hover:text-sky-500 duration-150 text-xl'
+            aria-controls="mobile-navigation"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-xl text-slate-700 transition-colors hover:border-blue-500 hover:text-blue-600 dark:border-slate-700 dark:text-slate-200 md:hidden"
           >
-            <IoMenu />
+            {isOpen ? <FaTimes /> : <IoMenu />}
           </button>
+
         </div>
       </div>
 
-      {/* Expandable search row for small/medium screens */}
+      {/* Mobile Search */}
       {mobileSearchOpen && (
-        <form onSubmit={handleSubmit(submit)} className='relative px-3 pb-3 md:hidden'>
-          <input
-            type="text"
-            placeholder='Search...'
-            value={searchTerm}
-            autoFocus
-            {...register("searchTerm", {
-              onChange: (e) => setSearchTerm(e.target.value)
-            })}
-            className='w-full border-2 text-black dark:bg-sky-50 outline-sky-500 border-gray-400 p-2 rounded-3xl pr-12 pl-4'
-          />
-          <button type='submit' aria-label="Search">
-            <AiOutlineSearch className='text-2xl absolute right-6 top-[18px] cursor-pointer hover:text-sky-500' />
-          </button>
+        <form
+          onSubmit={submitSearch}
+          className="border-t border-slate-100 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950 md:hidden"
+        >
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search articles..."
+              autoFocus
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              className="w-full rounded-full border border-slate-300 bg-slate-50 py-2.5 pl-5 pr-12 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            />
+
+            <button
+              type="submit"
+              aria-label="Search articles"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-slate-500 hover:text-blue-600 dark:text-slate-400"
+            >
+              <AiOutlineSearch />
+            </button>
+          </div>
         </form>
       )}
 
-      {/* Backdrop for mobile drawer */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          onClick={toggleMenu}
-          className='fixed inset-0 sm:hidden bg-black/30 z-40'
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 top-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
           aria-hidden="true"
         />
       )}
 
-      {/* Side navbar for smaller screens */}
-      <div
-        className={`text-black dark:text-white fixed top-0 right-0 sm:hidden ${isOpen ? 'flex' : 'hidden'} bg-white dark:bg-slate-800 h-screen w-4/5 max-w-xs z-50 shadow-xl`}
+      {/* Mobile Drawer */}
+      <aside
+        id="mobile-navigation"
+        aria-label="Mobile navigation"
+        className={`fixed right-0 top-0 z-50 flex h-dvh w-4/5 max-w-sm flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 dark:border-slate-800 dark:bg-slate-900 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        aria-hidden={!isOpen}
+        inert={!isOpen}
       >
-        <ul className='flex flex-col font-bold w-full p-2'>
-          <li className='my-4 ml-5'>
-            <button
-              onClick={toggleMenu}
-              aria-label="Close menu"
-              className='p-1 rounded border-2 border-gray-800 dark:border-gray-500 flex justify-center cursor-pointer items-center hover:text-sky-500 duration-150 text-xl'
+
+        <div className="flex items-center justify-between border-b border-slate-200 p-5 dark:border-slate-800">
+          <span className="text-lg font-bold text-slate-900 dark:text-white">
+            Navigation
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-lg text-slate-600 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        <nav className="flex-1 space-y-2 p-4">
+          <NavLink to="/" end className={mobileNavLinkClass}>
+            Home
+          </NavLink>
+
+          <NavLink to="/about" className={mobileNavLinkClass}>
+            About
+          </NavLink>
+
+          <NavLink to="/projects" className={mobileNavLinkClass}>
+            Projects
+          </NavLink>
+
+          <NavLink to="/contact" className={mobileNavLinkClass}>
+            Contact us
+          </NavLink>
+
+          {currentUser ? (
+            <NavLink
+              to="/dashboard?tab=profile"
+              className={mobileNavLinkClass}
             >
-              <FaTimes />
-            </button>
-          </li>
-          <li className='w-full p-1 rounded duration-100 my-4 text-center'>
-            <NavLink to="/dashboard?tab=profile" className={mobileNavLinkClass}>Profile</NavLink>
-          </li>
-          <li className='w-full p-1 rounded duration-100 my-4 text-center'>
-            <NavLink to="/" className={mobileNavLinkClass}>Home</NavLink>
-          </li>
-          <li className='w-full p-1 rounded duration-100 my-4 text-center'>
-            <NavLink to="/about" className={mobileNavLinkClass}>About</NavLink>
-          </li>
-          <li className='w-full p-1 rounded duration-100 my-4 text-center'>
-            <NavLink to="/projects" className={mobileNavLinkClass}>Projects</NavLink>
-          </li>
-        </ul>
-      </div>
+              My Profile
+            </NavLink>
+          ) : (
+            <NavLink to="/signup" className={mobileNavLinkClass}>
+              Sign Up
+            </NavLink>
+          )}
+        </nav>
+
+        <div className="border-t border-slate-200 p-5 dark:border-slate-800">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Explore, learn and build something meaningful.
+          </p>
+        </div>
+
+      </aside>
     </header>
   )
 }

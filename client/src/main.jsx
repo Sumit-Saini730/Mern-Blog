@@ -42,7 +42,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path='projects' element={<Projects />} />
       <Route path='post/:postSlug' element={<PostPage />} />
-      {/* <Route path='contact' element={<Contact />} /> */}
+      <Route path='contact' element={<Contact />} />
     </Route>
   )
 )

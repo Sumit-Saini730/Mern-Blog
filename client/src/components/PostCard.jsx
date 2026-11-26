@@ -1,22 +1,47 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
 function PostCard({ post }) {
     return (
-        <div className='group relative w-full border h-[400px] overflow-hidden rounded-lg sm:h-[350px] border-sky-500 hover:border-2 p-1 transition-all duration-200'>
-            <Link to={`/post/${post.slug}`}>
-                <img
-                    src={post.image}
-                    alt={post.title}
-                    className='h-[240px] w-full object-cover rounded-lg group-hover:h-[210px] transition-all duration-300 z-20'
-                />
+        <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-slate-200/60 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500/50 dark:hover:shadow-black/20">
+
+            <Link
+                to={`/post/${post.slug}`}
+                className="block overflow-hidden"
+            >
+                <div className="aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    <img
+                        src={post.image}
+                        alt={post.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                </div>
             </Link>
-            <div className="p-3 flex flex-col gap-2">
-                <p className='text-lg font-semibold line-clamp-2 dark:text-white'>{post.title}</p>
-                <span className='italic text-sm'>{post.category}</span>
-                <Link className='z-10 group-hover:bottom-0 absolute bottom-[-200px] left-0 right-0 border border-sky-500 bg-sky-500 hover:bg-sky-600 text-white transition-all duration-300 py-2 text-center rounded-md !rounded-tl-none !rounded-tr-none m-2' to={`/post/${post.slug}`}>Read article</Link>
+
+            <div className="flex flex-1 flex-col p-5">
+
+                <span className="mb-3 w-fit rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+                    {post.category}
+                </span>
+
+                <Link to={`/post/${post.slug}`}>
+                    <h3 className="text-lg font-semibold leading-snug text-slate-900 transition-colors duration-200 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 line-clamp-2">
+                        {post.title}
+                    </h3>
+                </Link>
+
+                <div className="mt-auto pt-5">
+                    <Link
+                        to={`/post/${post.slug}`}
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition-all duration-200 hover:gap-3 dark:text-blue-400"
+                    >
+                        Read article
+                        <span aria-hidden="true">→</span>
+                    </Link>
+                </div>
+
             </div>
-        </div>
+        </article>
     )
 }
 

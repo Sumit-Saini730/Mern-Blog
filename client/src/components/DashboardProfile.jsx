@@ -1,262 +1,441 @@
-import React, { useEffect, useState } from 'react'
-import Input from './Input'
-import { FaEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import Input from "./Input";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import default_image from "../assets/default_image.jpg";
 import { useForm } from "react-hook-form";
-import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '../features/user/userSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import api from '../api/api.js';
-import {Link} from "react-router-dom";
-
+import {
+  updateStart,
+  updateSuccess,
+  updateFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+} from "../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import api from "../api/api.js";
+import { Link, useNavigate } from "react-router-dom";
 
 function DashboardProfile() {
+  const { currentUser, error } = useSelector((state) => state.user);
 
-  const { currentUser, error } = useSelector((state) => state.user)
-  // console.log(currentUser)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [isSure, setIsSure] = useState(false)
-  const [imageFile, setImageFile] = useState(null)
-  const [imageFileTempUrl, setImageFileTempUrl] = useState(null)
-  const [updateMessage, setUpdateMessage] = useState(null)
-  // console.log(imageFile)
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSure, setIsSure] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
-  const toggleIsSure = () => {
-    setIsSure(!isSure)
-  }
+  const [updateMessage, setUpdateMessage] = useState("");
+  const [updateError, setUpdateError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      username: currentUser?.username || "",
+      password: "",
+    },
+  });
+
+  // Create and clean up the selected image preview URL.
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(imageFile);
+    setImagePreview(previewUrl);
+
+    return () => {
+      URL.revokeObjectURL(previewUrl);
+    };
+  }, [imageFile]);
 
   const handleImageChange = (e) => {
-    // console.log(e.target.files)
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file)
-      setImageFileTempUrl(URL.createObjectURL(file))
-    }
-  }
-  // console.log(imageFileTempUrl)
+    const file = e.target.files?.[0];
 
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
-    defaultValues: {
-      username: currentUser.username
+    if (file) {
+      setImageFile(file);
+    } else {
+      setImageFile(null);
     }
-  });
-  const dispatch = useDispatch();
-  const Submit = async (data) => {
-    // console.log("printing data...")
-    // console.log(data)
+  };
+
+  const handleUpdateProfile = async (data) => {
+    setUpdateMessage("");
+    setUpdateError("");
+
     try {
       dispatch(updateStart());
 
       const formData = new FormData();
-      formData.append("username", data.username);
+
+      formData.append("username", data.username.trim());
       formData.append("password", data.password || "");
-      if(data.profilePicture && data.profilePicture.length > 0){
+
+      if (data.profilePicture?.length > 0) {
         formData.append("profilePicture", data.profilePicture[0]);
       }
 
-      const response = await api.patch(`api/v1/users/update/${currentUser._id}`, formData);
-      // console.log(response)
-      // console.log(response.data.success)
+      const response = await api.patch(
+        `api/v1/users/update/${currentUser._id}`,
+        formData
+      );
 
-      if (response.data.success === true) {
+      if (response.data.success) {
         dispatch(updateSuccess(response.data.data.user));
-        setUpdateMessage(response.data.message);
+
+        setUpdateMessage(
+          response.data.message || "Profile updated successfully."
+        );
+
+        setImageFile(null);
+
+        // Clear the success message after a few seconds.
         setTimeout(() => {
-          setUpdateMessage(null);
+          setUpdateMessage("");
         }, 3000);
-      }
-
-      if (response.data.success === false) {
-        dispatch(updateFailure(response.data.message));
-      }
-
-    } catch (error) {
-      console.log(error)
-      if (error.response) {
-        const message = error.response.data.message;
-        if (message) {
-          // alert(message);
-          dispatch(updateFailure(message));
-        } else {
-          alert("An unknown error occurred.");
-          // setError("An unknown error occurred.");
-        }
-      } else if (error.request) {
-        // alert("No response from server. Please try again later.");
-        dispatch(updateFailure("No response from server. Please try again later."));
       } else {
-        // alert("An error occurred. Please try again.");
-        dispatch(updateFailure("An error occurred. Please try again."));
+        const message =
+          response.data.message || "Unable to update your profile.";
+
+        dispatch(updateFailure(message));
+        setUpdateError(message);
       }
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        (err.request
+          ? "No response from server. Please try again."
+          : "Something went wrong. Please try again.");
+
+      dispatch(updateFailure(message));
+      setUpdateError(message);
     }
-  }
+  };
+
   const handleDeleteUser = async () => {
-    setIsSure(false)
+    setDeleteError("");
+    setIsDeleting(true);
+
     try {
-      dispatch(deleteUserStart())
-      const response = await api.delete(`api/v1/users/delete/${currentUser._id}`)
-      if(response.data.success === true){
-        dispatch(deleteUserSuccess(response.data.message))
+      dispatch(deleteUserStart());
+
+      const response = await api.delete(
+        `api/v1/users/delete/${currentUser._id}`
+      );
+
+      if (response.data.success) {
+        dispatch(deleteUserSuccess(response.data.message));
+        setIsSure(false);
+        navigate("/signin");
+      } else {
+        const message =
+          response.data.message || "Unable to delete your account.";
+
+        dispatch(deleteUserFailure(message));
+        setDeleteError(message);
       }
-      if(response.data.success === false){
-        dispatch(deleteUserFailure(response.data.message))
-      }
-    } catch (error) {
-      dispatch(deleteUserFailure(error.message))
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        "Something went wrong while deleting your account.";
+
+      dispatch(deleteUserFailure(message));
+      setDeleteError(message);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  if (!currentUser) {
+    return null;
   }
 
   return (
-    <div className='flex flex-col h-screen mt-5 p-6 sm:p-0 sm:w-4/6 md:w-1/2 w-full mx-auto'>
-      <h1 className='text-3xl text-center font-bold mb-5'>Profile</h1>
+    <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+      {/* Page heading */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Profile Settings
+        </h1>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Manage your account information and profile details.
+        </p>
+      </div>
 
-        <form onSubmit={handleSubmit(Submit)} encType='multipart/form-data'>
-          <div className='w-44 h-44 cursor-pointer shadow-md rounded-full mx-auto mb-3 relative'>
+      {/* Profile form */}
+      <form
+        onSubmit={handleSubmit(handleUpdateProfile)}
+        encType="multipart/form-data"
+        className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-8"
+      >
+        {/* Profile image */}
+        <div className="mb-8 flex flex-col items-center">
+          <div className="relative">
             <img
-              className={`w-full h-full border-2 rounded-full border-gray-300 object-cover cursor-default`}
-              onError={(e) => e.target.src = default_image}
-              src={imageFileTempUrl || currentUser.profilePicture}
-              alt="user"
+              src={imagePreview || currentUser.profilePicture || default_image}
+              alt="Profile"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = default_image;
+              }}
+              className="h-32 w-32 rounded-full border-4 border-gray-100 object-cover shadow-md dark:border-gray-700"
             />
-            <div className={`absolute bottom-1`}>
-              {!imageFileTempUrl ?
-                (<label className={`border-2 p-1 bg-gray-600 hover:bg-gray-700 text-white rounded-lg cursor-pointer duration-200 font-semibold`}>
-                  <input
-                    type="file"
-                    accept='image/*'
-                    className='hidden'
-                    {...register("profilePicture", {
-                      onChange: handleImageChange,
-                      validate: {
-                        fileSize: (file) => {
-                          if (!file || file.length === 0) return true
-                          return file[0].size <= 2 * 1024 * 1024 || "Image size should be less than 2MB"
-                        }
-                      },
-                    })}
-                  />✎ Edit
-                </label>)
-                :
-                null
-              }
-              {errors.profilePicture && <span className='text-red-500 text-sm'>{errors.profilePicture.message}</span>}
-            </div>
 
+            <label
+              htmlFor="profilePicture"
+              className="absolute bottom-1 right-0 cursor-pointer rounded-full border-2 border-white bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md transition hover:bg-blue-700 dark:border-gray-800"
+            >
+              Edit
+            </label>
+
+            <input
+              id="profilePicture"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              {...register("profilePicture", {
+                onChange: handleImageChange,
+                validate: {
+                  fileType: (files) => {
+                    if (!files || files.length === 0) return true;
+
+                    return (
+                      files[0].type.startsWith("image/") ||
+                      "Please select a valid image."
+                    );
+                  },
+                  fileSize: (files) => {
+                    if (!files || files.length === 0) return true;
+
+                    return (
+                      files[0].size <= 2 * 1024 * 1024 ||
+                      "Image size must be less than 2MB."
+                    );
+                  },
+                },
+              })}
+            />
           </div>
 
-          <div className='flex flex-col gap-y-3'>
-            <div>
+          {errors.profilePicture && (
+            <p className="mt-3 text-center text-sm text-red-500">
+              {errors.profilePicture.message}
+            </p>
+          )}
+
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            JPG, PNG or other image formats. Maximum size: 2MB.
+          </p>
+        </div>
+
+        {/* Account information */}
+        <div className="space-y-5">
+          <div>
+            <Input
+              id="username"
+              type="text"
+              label="Username"
+              {...register("username", {
+                required: "Username is required.",
+                minLength: {
+                  value: 3,
+                  message: "Username must be at least 3 characters.",
+                },
+                validate: (value) =>
+                  value.trim().length >= 3 ||
+                  "Username must be at least 3 characters.",
+              })}
+            />
+
+            {errors.username && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.username.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Input
+              id="email"
+              type="email"
+              label="Email Address"
+              value={currentUser.email || ""}
+              disabled
+            />
+
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Your email address cannot be changed here.
+            </p>
+          </div>
+
+          {currentUser.authProvider === "local" && (
+            <div className="relative">
               <Input
-                type="text"
-                label="Username"
-                {...register("username", {
-                  required: true,
-                  minLength: { value: 3, message: "Username must be at least 3 characters" },
-                  onBlur: (e) => setValue("username", e.target.value.trim())
+                id="password"
+                type={showPassword ? "text" : "password"}
+                label="New Password"
+                placeholder="Leave blank to keep your current password"
+                {...register("password", {
+                  validate: (value) =>
+                    !value ||
+                    value.length >= 6 ||
+                    "Password must be at least 6 characters.",
                 })}
               />
-              {errors.username && <span className='text-red-500 text-sm'>{errors.username.message}</span>}
-            </div>
 
-            <div>
-              <Input
-                type="text"
-                label="Email"
-                value={currentUser.email}
-                disabled={true}
-              />
-            </div>
-
-            {currentUser.authProvider === "local" && <div className='relative'>
-              <Input
-                type={showPassword ? "text" : "password"}
-                label="Password"
-                placeholder="password"
-                {...register("password",
-                  {
-                    validate: (value) => {
-                      !value || value.length >= 6 || "Password must be at least 6 characters"
-                    },
-                    onBlur: (e) => setValue("password", e.target.value.trim())
-                  }
-                )}
-              />
-              {errors.password && <span className='text-red-500 text-sm'>{errors.password.message}</span>}
-
-              <span
-                className={`text-2xl absolute right-6 text-black top-[38px] cursor-pointer duration-100 hover:text-sky-500`}
-                onClick={togglePasswordVisibility}
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-4 top-[38px] text-xl text-gray-500 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
-            </div>}
-          </div>
+              </button>
 
-          <button
-            type='submit'
-            className={`my-5 w-full py-3 text-white rounded-xl font-bold bg-sky-500 hover:bg-sky-600 focus:ring-2 focus:ring-sky-500 border-2 active:bg-sky-700 duration-200 ${isSubmitting ? "disabled" : ""}`}
-          >
-            {isSubmitting ? "loading..." : "Update"}
-          </button>
-        </form>
-        {updateMessage && <span className='text-green-500 mb-5 text-lg font-semibold text-center border-2 border-green-500 rounded-xl py-2 bg-green-100'>{updateMessage}</span>}
-        
-        {currentUser.isAdmin && (
-          <Link to={"/create-post"}>
-            <button
-              type='button'
-              className='w-full py-3 mb-5 text-white rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 focus:ring-2 focus:ring-sky-500 font-bold border-2 duration-200'
-            >
-              Create a post
-            </button>
-          </Link>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Update error */}
+        {(updateError || (error && !updateMessage)) && (
+          <p className="mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-900 dark:bg-red-950/30 dark:text-red-400">
+            {updateError || error}
+          </p>
         )}
 
-      {/* delete account */}
-      <div className=''>
-        <button
-          type='button'
-          onClick={toggleIsSure}
-          className='w-full py-3 text-white rounded-xl font-bold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
+        {/* Update success */}
+        {updateMessage && (
+          <p className="mt-5 rounded-lg border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-700 dark:border-green-900 dark:bg-green-950/30 dark:text-green-400">
+            {updateMessage}
+          </p>
+        )}
 
+        {/* Update button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="mt-7 w-full rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-gray-800"
+        >
+          {isSubmitting ? "Updating..." : "Save Changes"}
+        </button>
+      </form>
+
+      {/* Admin shortcut */}
+      {currentUser.isAdmin && (
+        <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5 dark:border-blue-900/50 dark:bg-blue-950/20">
+          <h2 className="font-semibold text-gray-900 dark:text-white">
+            Admin Actions
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            Create and publish a new blog post.
+          </p>
+
+          <Link
+            to="/create-post"
+            className="mt-4 inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Create a Post
+          </Link>
+        </div>
+      )}
+
+      {/* Delete account */}
+      <div className="mt-8 border-t border-gray-200 pt-6 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Danger Zone
+        </h2>
+
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Deleting your account is permanent. Make sure you really want to do
+          this.
+        </p>
+
+        <button
+          type="button"
+          onClick={() => {
+            setDeleteError("");
+            setIsSure(true);
+          }}
+          className="mt-4 rounded-lg border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
         >
           Delete Account
         </button>
-        {error && <span className='text-red-500 mb-5 text-lg font-semibold text-center border-2 border-red-500 rounded-xl py-2 bg-red-100'>{error}</span>}
+      </div>
 
-        <div className={`${isSure ? "flex" : "hidden"} top-0 left-0 items-center justify-center fixed w-full h-screen bg-transparent backdrop-blur-md`}>
-          <div className='p-6 rounded-xl w-96 bg-gray-100 border-2 border-red-300'>
-            <div>
-              <HiOutlineExclamationCircle className='text-6xl text-gray-500 mx-auto' />
+      {/* Delete confirmation modal */}
+      {isSure && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          onClick={() => !isDeleting && setIsSure(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex justify-center">
+              <HiOutlineExclamationCircle className="text-5xl text-red-500" />
             </div>
-            <p className='text-lg font-semibold text-wrap text-black text-center'>Are you sure you want to delete your account?</p>
-            <div className='flex justify-between'>
+
+            <h2
+              id="delete-account-title"
+              className="text-center text-xl font-bold text-gray-900 dark:text-white"
+            >
+              Delete your account?
+            </h2>
+
+            <p className="mt-3 text-center text-sm leading-6 text-gray-600 dark:text-gray-400">
+              Are you sure you want to delete your account? This action cannot
+              be undone.
+            </p>
+
+            {deleteError && (
+              <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950/30 dark:text-red-400">
+                {deleteError}
+              </p>
+            )}
+
+            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row">
               <button
-                onClick={toggleIsSure}
-                className='p-3 px-6 mt-5 text-sky-500 text-lg font-semibold text-center border-2 border-sky-500 hover:bg-sky-200 rounded-xl bg-sky-100 duration-200'
+                type="button"
+                onClick={() => setIsSure(false)}
+                disabled={isDeleting}
+                className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                No, cancel
+                Cancel
               </button>
 
               <button
+                type="button"
                 onClick={handleDeleteUser}
-                className='p-3 px-6 mt-5 text-white rounded-lg text-lg font-semibold bg-red-500 hover:bg-red-600 focus:ring-2 focus:ring-red-500 border-2 active:bg-red-700 duration-200'
+                disabled={isDeleting}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Yes, I'm sure
+                {isDeleting ? "Deleting..." : "Yes, Delete Account"}
               </button>
-
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default DashboardProfile
+export default DashboardProfile;

@@ -1,126 +1,203 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import api from '../api/api.js'
-import { signoutSuccess } from '../features/user/userSlice'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import api from "../api/api.js";
+import { signoutSuccess } from "../features/user/userSlice";
+
 import { LuLogOut } from "react-icons/lu";
-import { FaTimes, FaUser } from "react-icons/fa";
+import {
+  HiOutlineUser,
+  HiOutlineChevronDown,
+  HiOutlineXMark,
+} from "react-icons/hi2";
+
 import default_image from "../assets/default_image.jpg";
 
 function ProfileDropdown() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [error, setError] = useState("");
 
   const dropdownRef = useRef(null);
   const avatarRef = useRef(null);
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
+    setError("");
   };
 
-  const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target) &&
-      avatarRef.current &&
-      !avatarRef.current.contains(event.target)
-    ) {
-      setIsOpen(false);
-    }
-  };
-
+  // Close dropdown when clicking outside
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        avatarRef.current &&
+        !avatarRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
   const handleSignout = async () => {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+    setError("");
+
     try {
       const response = await api.post("api/v1/auth/signout");
-      if (response.data.success === true) {
+
+      if (response.data.success) {
         dispatch(signoutSuccess());
-        // console.log(response.data.message);
+        setIsOpen(false);
+        navigate("/signin");
+      } else {
+        setError(response.data.message || "Unable to sign out.");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
+  if (!currentUser) return null;
+
   return (
     <div className="relative">
-      {/* Profile Image Button */}
-      <div
+      {/* Profile button */}
+      <button
         ref={avatarRef}
+        type="button"
         onClick={toggleMenu}
-        className="w-10 h-10 rounded-full overflow-hidden cursor-pointer border border-gray-500"
+        aria-label="Open profile menu"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        className="flex items-center gap-2 rounded-full outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
       >
-        {currentUser?.profilePicture ? (
-          <img
-            src={currentUser.profilePicture}
-            alt="User_Profile"
-            onError={(e) => (e.target.src = default_image)}
-          />
-        ) : (
-          <span className="text-gray-500">No Image</span>
-        )}
-      </div>
+        <img
+          src={currentUser.profilePicture || default_image}
+          alt={currentUser.username || "Profile"}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = default_image;
+          }}
+          className="h-10 w-10 rounded-full border-2 border-gray-200 object-cover dark:border-gray-700"
+        />
 
-      {/* Dropdown Menu */}
+        <HiOutlineChevronDown
+          className={`hidden text-gray-500 transition-transform duration-200 sm:block dark:text-gray-400 ${isOpen ? "rotate-180" : ""
+            }`}
+        />
+      </button>
+
+      {/* Dropdown */}
       {isOpen && (
-        <div
-          ref={dropdownRef}
-          className="origin-top absolute top-[70px] right-3 w-72 rounded-xl bg-gray-50 border-2 border-gray-400 text-black shadow-lg transition-all duration-200"
-        >
-          <div className="before:content-[''] before:absolute before:-top-2 before:right-3 before:w-4 before:h-4 before:rotate-45 before:bg-gray-50 before:border-l-2 before:border-t-2 before:border-gray-400"></div>
-          <div className="flex items-center gap-4 p-3">
-            <span className="w-16 h-16 rounded-full overflow-hidden">
-              {currentUser?.profilePicture ? (
-                <img
-                  src={currentUser.profilePicture}
-                  alt="User_Profile"
-                  onError={(e) => (e.target.src = default_image)}
-                />
-              ) : (
-                <span className="text-gray-500">No Image</span>
+        <>
+          <div
+            ref={dropdownRef}
+            className="absolute right-0 top-14 z-50 w-72 origin-top-right rounded-xl border border-gray-200 bg-white shadow-xl shadow-black/10 dark:border-gray-700 dark:bg-gray-800"
+          >
+            {/* User information */}
+            <div className="flex items-center gap-3 p-4">
+              <img
+                src={currentUser.profilePicture || default_image}
+                alt={currentUser.username || "Profile"}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = default_image;
+                }}
+                className="h-14 w-14 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600"
+              />
+
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate font-semibold text-gray-900 dark:text-white">
+                  {currentUser.fullName || currentUser.username}
+                </h3>
+
+                <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                  {currentUser.email}
+                </p>
+
+                {currentUser.isAdmin && (
+                  <span className="mt-1 inline-block rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                    Admin
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 dark:border-gray-700" />
+
+            {/* Menu links */}
+            <div className="p-2">
+              <Link
+                to="/dashboard?tab=profile"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400"
+              >
+                <HiOutlineUser className="text-xl" />
+                My Profile
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleSignout}
+                disabled={isSigningOut}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:text-red-400 dark:hover:bg-red-950/40"
+              >
+                {isSigningOut ? (
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                ) : (
+                  <LuLogOut className="text-xl" />
+                )}
+
+                {isSigningOut ? "Signing out..." : "Sign out"}
+              </button>
+
+              {error && (
+                <p className="px-3 py-2 text-xs text-red-600 dark:text-red-400">
+                  {error}
+                </p>
               )}
-            </span>
-            <span>
-              <h1 className="font-bold">{currentUser.fullName}</h1>
-              <p className="text-xs">{currentUser.email}</p>
-            </span>
-          </div>
-          <hr className="border rounded w-[95%] mx-auto" />
-          <div>
-            <Link
-              onClick={() => setIsOpen(false)}
-              to="/dashboard?tab=profile"
-              className="flex items-center justify-center gap-4 p-2 duration-200 hover:bg-gray-200"
-            >
-              <FaUser className="text-2xl" />
-              <span className="font-semibold hover:text-sky-500 duration-200 text-sm">Profile</span>
-            </Link>
-            <div
-              onClick={() => {
-                handleSignout();
-                setIsOpen(false);
-              }}
-              className="flex items-center gap-4 p-2 justify-center duration-200 hover:bg-gray-200 cursor-pointer"
-            >
-              <LuLogOut className="text-2xl" />
-              <span className="font-semibold hover:text-sky-500 duration-200 text-sm">Logout</span>
             </div>
-            <div
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-4 p-2 justify-center duration-200 hover:bg-gray-200 cursor-pointer"
-            >
-              <FaTimes className="text-2xl" />
-              <span className="font-semibold hover:text-sky-500 duration-200 text-sm">Close</span>
+
+            {/* Close */}
+            <div className="border-t border-gray-100 p-2 dark:border-gray-700">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+              >
+                <HiOutlineXMark className="text-lg" />
+                Close
+              </button>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

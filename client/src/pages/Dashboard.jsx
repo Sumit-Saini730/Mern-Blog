@@ -1,41 +1,73 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import DashboradSidebar from '../components/DashboradSidebar';
-import DashboardProfile from '../components/DashboardProfile';
-import DashPosts from '../components/DashPosts.jsx';
-import DashUsers from '../components/DashUsers.jsx';
-import DashComments from '../components/DashComments.jsx';
-import DashBoardComp from '../components/DashBoardComp.jsx';
+import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import DashboradSidebar from "../components/DashboradSidebar";
+import DashboardProfile from "../components/DashboardProfile";
+import DashPosts from "../components/DashPosts.jsx";
+import DashUsers from "../components/DashUsers.jsx";
+import DashComments from "../components/DashComments.jsx";
+import DashBoardComp from "../components/DashBoardComp.jsx";
 
 function Dashboard() {
   const location = useLocation();
-  const [tab, setTab] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const tabFromUrl = urlParams.get("tab");
-    // console.log(tabFromUrl);
-    if(tabFromUrl){
-      setTab(tabFromUrl);
+  if (!currentUser) {
+    return null;
+  }
+
+  const urlParams = new URLSearchParams(location.search);
+
+  const requestedTab = urlParams.get("tab");
+
+  // Default tab depends on the user's role
+  const tab =
+    requestedTab || (currentUser.isAdmin ? "dash" : "profile");
+
+  // Non-admin users can only access their profile through this page
+  const allowedTab = currentUser.isAdmin
+    ? tab
+    : "profile";
+
+  const renderTab = () => {
+    switch (allowedTab) {
+      case "dash":
+        return <DashBoardComp />;
+
+      case "profile":
+        return <DashboardProfile />;
+
+      case "posts":
+        return <DashPosts />;
+
+      case "users":
+        return <DashUsers />;
+
+      case "comments":
+        return <DashComments />;
+
+      default:
+        return currentUser.isAdmin
+          ? <DashBoardComp />
+          : <DashboardProfile />;
     }
-  }, [location.search])
+  };
+
   return (
-    <div className='flex flex-col sm:flex-row'>
+    <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950 sm:flex-row">
 
-    <div className=''>
-      <DashboradSidebar />
-    </div>
+      {/* Sidebar */}
+      <div className="shrink-0">
+        <DashboradSidebar />
+      </div>
 
-    <div className='min-h-screen w-full'>
-      {tab === "profile" && <DashboardProfile />}
-      {tab === "posts" && <DashPosts />}
-      {tab === "users" && <DashUsers />}
-      {tab === "comments" && <DashComments />}
-      {tab === "dash" && <DashBoardComp />}
-    </div>
+      {/* Dashboard Content */}
+      <main className="min-w-0 flex-1">
+        {renderTab()}
+      </main>
 
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
